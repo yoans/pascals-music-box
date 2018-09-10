@@ -198,7 +198,7 @@ export class Application extends React.Component {
             noteLength: this.state.noteLength,
             muted: this.state.muted
         }));
-        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Farrowgrid.sagaciasoft.com/?data=${gridString}&amp;src=sdkpreparse`;
+        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fpascalsmusicbox.sagaciasoft.com/?data=${gridString}&amp;src=sdkpreparse`;
         window.open(shareUrl,'newwindow','width=300,height=250');return false;
     }
     render() {
@@ -208,8 +208,8 @@ export class Application extends React.Component {
             <div className="no-copy midi-toys-app">
                 <div className="edit-options">
                     <div className=" edit-options-member app-title-div">
-                        <h1 data-step="1" data-intro="Welcome to Arrowgrid!">
-                            Arrowgrid
+                        <h1 data-step="1" data-intro="Welcome to Pascal's Music Box!">
+                            Pascal's Music Box
                         </h1>
                     </div>
                 </div>

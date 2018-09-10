@@ -91,6 +91,12 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
         };
         // eslint-disable-next-line no-param-reassign
         sketch.draw = function () {
+            // let notSheared = true;
+            // if(notSheared) {
+            //     notSheared = false;
+            //     const shear_factor = 1 / sketch.tan(sketch.PI / 2 - 3*sketch.PI / 16);
+            //     sketch.applyMatrix(1, 0, shear_factor, 1, 0, 0);
+            // }
             mouseX = sketch.mouseX;
             mouseY = sketch.mouseY;
             // draw background slash border
