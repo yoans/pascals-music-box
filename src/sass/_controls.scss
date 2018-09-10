@@ -1,0 +1,352 @@
+$black: #3D463F;
+$gray: #878C88;
+$lightgray: #d3d3d3;
+$white: #fefefe;
+$super-white: #ffffff;
+$blue: #0E52CE;
+$green: #72D687;
+$icon-size: 30px;
+
+// $color-hover: saturate(lighten($green, 10%), 20%);
+// $color-active: desaturate(darken($green, 20%), 20%);
+
+$color-hover: desaturate(darken($super-white, 20%), 10%);
+$color-active: fade-out($color-hover, 0.5);
+
+
+//
+// Buttons
+//
+.PlusButton,
+.PlayButton,
+.PauseButton,
+.PrevButton,
+.NextButton,
+.SoundOnButton,
+.SoundOffButton,
+.TrashButton,
+.EditButton,
+.EraseButton,
+.ArrowButton,
+.TutorialButton,
+.ShareButton {
+  
+  .number-overlayee {
+    position:relative;
+  }
+  .left-side-button {
+    left: 0px; 
+  }
+  .right-side-button {
+    right: 0px;
+  }
+  .number-overlay {
+    font-weight: bold;
+    color: black;
+    text-align:center;
+    position:absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+    
+    h4 {
+      margin: auto;
+      padding: 7px;
+    }
+  }
+
+  margin: 3.75px;
+  padding: 8px;
+  background: transparent;
+  border: 2px solid $super-white;
+  border-radius: 100%;
+
+  outline: none;
+
+    &.ActiveControl {
+        background: $color-active;
+    }
+
+  &[disabled] {
+    opacity: 0.5;
+  }
+  @-webkit-keyframes upRotation {
+        from {
+                -webkit-transform: rotate(180deg);
+        }
+        to {
+                -webkit-transform: rotate(270deg);
+        }
+    }
+    @-webkit-keyframes rightRotation {
+        from {
+                -webkit-transform: rotate(270deg);
+        }
+        to {
+                -webkit-transform: rotate(360deg);
+        }
+    }
+    @-webkit-keyframes downRotation {
+        from {
+                -webkit-transform: rotate(0deg);
+        }
+        to {
+                -webkit-transform: rotate(90deg);
+        }
+    }
+    @-webkit-keyframes leftRotation {
+        from {
+                -webkit-transform: rotate(90deg);
+        }
+        to {
+                -webkit-transform: rotate(180deg);
+        }
+    }
+
+
+        @-webkit-keyframes FullLeftRotation {
+            from {
+                    -webkit-transform: rotate(0deg);
+            }
+            to {
+                    -webkit-transform: rotate(180deg);
+            }
+        }
+        @-webkit-keyframes FullRightRotation {
+            from {
+                    -webkit-transform: rotate(180deg);
+            }
+            to {
+                    -webkit-transform: rotate(360deg);
+            }
+        }
+  .EditIconRotate {
+    -webkit-animation: FullRightRotation .3s ease-out;
+    transform: rotate(0deg);
+  }
+  .EraseIconRotate {
+    -webkit-animation: FullLeftRotation .3s ease-out;
+    transform: rotate(180deg);
+  }
+  .Up {
+    -webkit-animation: upRotation .2s ease-out;
+    transform: rotate(270deg);
+  } 
+  .Down {
+    -webkit-animation: downRotation .2s ease-out;
+    transform: rotate(90deg);
+  } 
+  .Left {
+    -webkit-animation: leftRotation .2s ease-out;
+    transform: rotate(180deg);
+  } 
+  .Right {
+    -webkit-animation: rightRotation .2s ease-out;
+    transform: rotate(0deg);
+  } 
+  &.isEnabled {
+    cursor: pointer;
+    &.TutorialButtonStartGreen {
+      background: rgba(12, 146, 0, 0.76);
+    }
+    
+    &:hover {
+      border-color: $color-hover;
+
+      .Icon-shape {
+        fill: $color-hover;
+      }
+      .Img-Shape {
+           filter: brightness(0.86);
+        }
+    }
+
+    &:active {
+      border-color: $color-active;
+
+      .Icon-shape {
+        fill: $color-active;
+      }
+      .Img-Shape {
+           filter: opacity(0.5);
+        }
+    }
+  }
+}
+
+.Icon {
+  display: block;
+  width: $icon-size;
+  height: $icon-size;
+}
+
+.Icon-shape {
+  fill: $super-white;
+}
+
+
+//
+// Sliders
+//
+
+.ProgressBar,
+.VolumeSlider {
+  position: relative;
+  background: #eee;
+  border-radius: 4px;
+
+  &-elapsed,
+  &-value {
+    background: $gray;
+    border-radius: 4px;
+  }
+
+  &-seek {
+    position: absolute;
+    cursor: pointer;
+  }
+
+  &-handle {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: $super-white;
+    border-radius: 100%;
+    transform: scale(0);
+    transition: transform 0.2s;
+  }
+
+  &.isSeekable,
+  &.isEnabled {
+    &:hover {
+      .ProgressBar-handle,
+      .VolumeSlider-handle {
+        transform: scale(1);
+      }
+
+      .ProgressBar-intent,
+      .VolumeSlider-intent {
+        position: absolute;
+        background: rgba(0,0,0,0.1);
+      }
+    }
+
+    .ProgressBar-elapsed,
+    .VolumeSlider-value {
+      background: $super-white;
+    }
+  }
+}
+
+.ProgressBar {
+  height: 8px;
+  margin: 10px 0;
+
+  &-elapsed {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  &-buffered {
+    height: 100%;
+    border-radius: 4px;
+    background: $lightgray;
+  }
+
+  &-seek {
+    top: -6px;
+    right: 0;
+    bottom: -6px;
+    left: 0;
+  }
+
+  &-handle {
+    top: 0;
+    margin: -4px 0 0 -8px;
+  }
+
+  &.isSeekable {
+    &:hover {
+      .ProgressBar-handle {
+        transform: scale(1);
+      }
+
+      .ProgressBar-intent {
+        top: 0;
+        left: 0;
+        height: 100%;
+      }
+    }
+  }
+
+  &.isLoading {
+    opacity: 0.5;
+    background: #ccc;
+    animation: barLoading 2s infinite;
+  }
+}
+
+.VolumeSlider {
+  // margin: 10px 0;
+
+  &-value {
+    position: absolute;
+  }
+
+  &.isHorizontal {
+    width: 100px;
+    height: 8px;
+    transition: width 0.3s, height 0.05s;
+  }
+
+  &.isHorizontal &-value {
+    height: 100%;
+    left: 0;
+  }
+
+  &.isHorizontal &-handle {
+    margin: -4px 0 0 -8px;
+  }
+
+  &.isVertical {
+    width: 8px;
+    height: 100px;
+    transition: width 0.05s, height 0.3s;
+  }
+
+  &.isVertical &-value {
+    bottom: 0;
+    width: 100%;
+  }
+
+  &.isVertical &-handle {
+    left: 0;
+    margin: 0 0 -8px -4px;
+  }
+
+  &-seek {
+    left: -6px;
+    top: 0;
+    right: -6px;
+    bottom: 0;
+  }
+
+  &.isEnabled {
+    &:hover {
+      .VolumeSlider-handle {
+        transform: scale(1);
+      }
+
+      .VolumeSlider-intent {
+        bottom: 0;
+        left: 0;
+        width: 100%;
+      }
+    }
+  }
+}
