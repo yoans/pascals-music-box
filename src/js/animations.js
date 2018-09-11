@@ -2,11 +2,11 @@ import p5 from 'p5';
 import {
     BOUNDARY,
     NO_BOUNDARY,
-    getArrowBoundaryDictionary,
+    getBallBoundaryDictionary,
     locationKey,
-    arrowBoundaryKey,
+    ballBoundaryKey,
     boundaryKey
-} from './arrows-logic';
+} from './balls-logic';
 
 let stateDrawing;
 let previousTime;
@@ -35,7 +35,7 @@ export const newTriangleDrawing = () => {
         line(0, 0, 25, 0);
         line(0, 25, 25, 0);
 }
-export const getAdderWithMousePosition = (arrowAdder) => (e) => {
+export const getAdderWithMousePosition = (ballAdder) => (e) => {
     if (mouseX > 0 + gridCanvasBorderSize &&
         mouseX < gridCanvasSize - gridCanvasBorderSize &&
         mouseY > 0 + gridCanvasBorderSize &&
@@ -43,35 +43,19 @@ export const getAdderWithMousePosition = (arrowAdder) => (e) => {
     ) {
         const mouseXindex = convertPixelToIndex(mouseX);
         const mouseYindex = convertPixelToIndex(mouseY);
-        arrowAdder(mouseXindex, mouseYindex, e);
+        ballAdder(mouseXindex, mouseYindex, e);
     } else {
     }
 };
 export const setUpCanvas = (state) => {
     stateDrawing = state;
     previousTime = new Date();
-    const triangleDrawingArray = [
-        (topLeft, cellSize, sketch) => sketch.triangle(
-            topLeft.x + (cellSize / 2.0), topLeft.y,
-            topLeft.x + cellSize, topLeft.y + cellSize,
-            topLeft.x, topLeft.y + cellSize
-        ),
-        (topLeft, cellSize, sketch) => sketch.triangle(
-            topLeft.x, topLeft.y,
-            topLeft.x + cellSize, topLeft.y + (cellSize / 2.0),
-            topLeft.x, topLeft.y + cellSize
-        ),
-        (topLeft, cellSize, sketch) => sketch.triangle(
-            topLeft.x, topLeft.y,
-            topLeft.x + cellSize, topLeft.y,
-            topLeft.x + (cellSize / 2.0), topLeft.y + cellSize
-        ),
-        (topLeft, cellSize, sketch) => sketch.triangle(
-            topLeft.x + cellSize, topLeft.y,
-            topLeft.x + cellSize, topLeft.y + cellSize,
-            topLeft.x, topLeft.y + (cellSize / 2.0)
-        )
-    ];
+    const triangleDrawingArray = (topLeft, cellSize, sketch) => sketch.ellipse(
+        topLeft.x + (cellSize / 2.0),
+        topLeft.y + (cellSize / 2.0),
+        cellSize,
+        cellSize
+    );
     const triangleRotatingArray = [
 
         (cellSize, sketch, percentage) => sketch.triangle(
@@ -103,10 +87,12 @@ export const setUpCanvas = (state) => {
     };
     const timeShift = ({ x, y }, vector, shiftAmount) => {
         const shifted = [
-            { x, y: y - shiftAmount },
+            { x: x + shiftAmount, y: y - shiftAmount },
             { x: x + shiftAmount, y },
             { x, y: y + shiftAmount },
+            { x: x - shiftAmount, y: y + shiftAmount },
             { x: x - shiftAmount, y },
+            { x, y: y - shiftAmount },
         ];
         return shifted[vector];
     };
@@ -114,16 +100,10 @@ export const setUpCanvas = (state) => {
     const drawingContext = (sketch) => {
         // eslint-disable-next-line no-param-reassign
         sketch.setup = () => {
-            sketch.createCanvas(gridCanvasSize + gridCanvasBorderSize * 2, gridCanvasSize + gridCanvasBorderSize * 2).parent('sketch-holder').id('arrows-animation');
+            sketch.createCanvas(gridCanvasSize + gridCanvasBorderSize * 2, gridCanvasSize + gridCanvasBorderSize * 2).parent('sketch-holder').id('balls-animation');
         };
         // eslint-disable-next-line no-param-reassign
         sketch.draw = () => {
-            // let notSheared = true;
-            // if(notSheared) {
-            //     notSheared = false;
-            //     const shear_factor = 1 / sketch.tan(sketch.PI / 2 - 3*sketch.PI / 16);
-            //     sketch.applyMatrix(1, 0, shear_factor, 1, 0, 0);
-            // }
             mouseX = sketch.mouseX;
             mouseY = sketch.mouseY;
             // draw background slash border
@@ -148,7 +128,7 @@ export const setUpCanvas = (state) => {
             sketch.fill(255, 255, 255);
             sketch.strokeWeight(0);
             const convertIndexToPixel = index => (index * cellSize) + gridCanvasBorderSize;
-            const convertArrowToTopLeft = xy => (
+            const convertBallToTopLeft = xy => (
                 {
                     x: convertIndexToPixel(xy.x),
                     y: convertIndexToPixel(xy.y)
@@ -161,8 +141,8 @@ export const setUpCanvas = (state) => {
                 1.0 * stateDrawing.noteLength
             ));
             const percentage = possiblePercentage > 1 ? 1 : possiblePercentage;
-            const boundaryDictionary = getArrowBoundaryDictionary(
-                stateDrawing.grid.arrows || [],
+            const boundaryDictionary = getBallBoundaryDictionary(
+                stateDrawing.grid.balls || [],
                 stateDrawing.grid.size,
                 boundaryKey
             );
@@ -180,10 +160,10 @@ export const setUpCanvas = (state) => {
                     translateAndRotate(topLeft, sketch, 0, cellSize);
                     return scaledColor;
                 }
-                boundaryDictionaryX.map((arrow) => {
+                boundaryDictionaryX.map((ball) => {
                     const topLeft = {
                         x:convertIndexToPixel(0),
-                        y:convertIndexToPixel(arrow.y)
+                        y:convertIndexToPixel(ball.y)
                     };
 
                     prepareDrawForColumnsAndRows(topLeft);
@@ -192,9 +172,9 @@ export const setUpCanvas = (state) => {
                     sketch.pop();
                     return undefined;
                 });
-                boundaryDictionaryY.map((arrow) => {
+                boundaryDictionaryY.map((ball) => {
                     const topLeft = {
-                        x:convertIndexToPixel(arrow.x),
+                        x:convertIndexToPixel(ball.x),
                         y:convertIndexToPixel(0)
                     };
                     prepareDrawForColumnsAndRows(topLeft);
@@ -204,117 +184,117 @@ export const setUpCanvas = (state) => {
                     return undefined;
                 });
             }
-            // draw arrows
+            // draw balls
 
-            const arrowLocationDictionary = getArrowBoundaryDictionary(
-                stateDrawing.grid.arrows,
+            const ballLocationDictionary = getBallBoundaryDictionary(
+                stateDrawing.grid.balls,
                 stateDrawing.grid.size,
                 locationKey
             );
 
-            // non-rotated arrows
-            const arrowsToNotRotateDictionary = Object.keys(arrowLocationDictionary).reduce(
+            // non-rotated balls
+            const ballsToNotRotateDictionary = Object.keys(ballLocationDictionary).reduce(
                 (acc, location) => (
-                    arrowLocationDictionary[location].length === 1 ?
+                    ballLocationDictionary[location].length === 1 ?
                         [
                             ...acc,
-                            ...arrowLocationDictionary[location],
+                            ...ballLocationDictionary[location],
                         ] :
                         acc
                 ),
                 []
             );
-            // non-wall Arrows
-            const arrowDictionary = getArrowBoundaryDictionary(
-                arrowsToNotRotateDictionary,
+            // non-wall Balls
+            const ballDictionary = getBallBoundaryDictionary(
+                ballsToNotRotateDictionary,
                 stateDrawing.grid.size,
-                arrowBoundaryKey
+                ballBoundaryKey
             );
-            (arrowDictionary[NO_BOUNDARY] || []).map((arrow) => {
+            (ballDictionary[NO_BOUNDARY] || []).map((ball) => {
                 const shiftedTopLeft = timeShift(
-                    convertArrowToTopLeft(arrow),
-                    arrow.vector,
+                    convertBallToTopLeft(ball),
+                    ball.vector,
                     cellSize * percentage
                 );
-                const triangleDrawer = triangleDrawingArray[arrow.vector];
-                triangleDrawer(shiftedTopLeft, cellSize, sketch);
+                // const triangleDrawer = triangleDrawingArray[ball.vector];
+                triangleDrawingArray(shiftedTopLeft, cellSize, sketch);
                 return undefined;
             });
-            // wall Arrows
-            (arrowDictionary[BOUNDARY] || []).map((arrow) => {
-                sketch.push();
-                sketch.strokeWeight(0);
-                sketch.fill(255, 255, 255);
-                const topLeft = convertArrowToTopLeft(arrow);
-                translateAndRotate(topLeft, sketch, arrow.vector, cellSize);
-                sketch.quad(
-                    0, cellSize,
-                    cellSize / 2, cellSize * percentage,
-                    cellSize, cellSize,
-                    cellSize / 2, cellSize + cellSize * percentage
-                );
-                sketch.pop();
-                return undefined;
-            });
-            // rotating Arrows
+            // // wall Balls
+            // (ballDictionary[BOUNDARY] || []).map((ball) => {
+            //     sketch.push();
+            //     sketch.strokeWeight(0);
+            //     sketch.fill(255, 255, 255);
+            //     const topLeft = convertBallToTopLeft(ball);
+            //     translateAndRotate(topLeft, sketch, ball.vector, cellSize);
+            //     sketch.quad(
+            //         0, cellSize,
+            //         cellSize / 2, cellSize * percentage,
+            //         cellSize, cellSize,
+            //         cellSize / 2, cellSize + cellSize * percentage
+            //     );
+            //     sketch.pop();
+            //     return undefined;
+            // });
+            // // rotating Balls
 
-            const arrowsToRotateDictionary = Object.keys(arrowLocationDictionary).reduce(
-                (acc, location) => (
-                    arrowLocationDictionary[location].length !== 1 ?
-                        {
-                            ...acc,
-                            [location]: arrowLocationDictionary[location],
-                        } :
-                        acc
-                ),
-                {}
-            );
-            Object.keys(arrowsToRotateDictionary).map((arrowsToRotateIndex) => {
-                const rotations = (
-                    (
-                        arrowsToRotateDictionary[arrowsToRotateIndex].length % 4
-                    ) || 4
-                ) - 1;
-                const bouncedRotation = (rotations + 2) % 4;
-                // draw not bounced
-                const bouncingDictionary = getArrowBoundaryDictionary(
-                    arrowsToRotateDictionary[arrowsToRotateIndex],
-                    stateDrawing.grid.size,
-                    arrowBoundaryKey,
-                    rotations
-                );
-                const arrowsNotBouncing = bouncingDictionary[NO_BOUNDARY] || [];
-                arrowsNotBouncing.map((arrow) => {
-                    const topLeft = convertArrowToTopLeft(arrow);
+            // const ballsToRotateDictionary = Object.keys(ballLocationDictionary).reduce(
+            //     (acc, location) => (
+            //         ballLocationDictionary[location].length !== 1 ?
+            //             {
+            //                 ...acc,
+            //                 [location]: ballLocationDictionary[location],
+            //             } :
+            //             acc
+            //     ),
+            //     {}
+            // );
+            // Object.keys(ballsToRotateDictionary).map((ballsToRotateIndex) => {
+            //     const rotations = (
+            //         (
+            //             ballsToRotateDictionary[ballsToRotateIndex].length % 4
+            //         ) || 4
+            //     ) - 1;
+            //     const bouncedRotation = (rotations + 2) % 4;
+            //     // draw not bounced
+            //     const bouncingDictionary = getBallBoundaryDictionary(
+            //         ballsToRotateDictionary[ballsToRotateIndex],
+            //         stateDrawing.grid.size,
+            //         ballBoundaryKey,
+            //         rotations
+            //     );
+            //     const ballsNotBouncing = bouncingDictionary[NO_BOUNDARY] || [];
+            //     ballsNotBouncing.map((ball) => {
+            //         const topLeft = convertBallToTopLeft(ball);
                     
-                    sketch.push();
-                    sketch.strokeWeight(0);
-                    sketch.fill(255, 255, 255);
-                    translateAndRotate(topLeft, sketch, arrow.vector, cellSize);
+            //         sketch.push();
+            //         sketch.strokeWeight(0);
+            //         sketch.fill(255, 255, 255);
+            //         translateAndRotate(topLeft, sketch, ball.vector, cellSize);
                     
-                    triangleRotatingArray[rotations](cellSize, sketch, percentage);
+            //         triangleRotatingArray[rotations](cellSize, sketch, percentage);
                     
-                    sketch.pop();
-                    return undefined;
-                });
+            //         sketch.pop();
+            //         return undefined;
+            //     });
                 
-                const arrowsBouncing = bouncingDictionary[BOUNDARY] || [];
+            //     const ballsBouncing = bouncingDictionary[BOUNDARY] || [];
 
-                // bounced
-                arrowsBouncing.map((arrow) => {
-                    const topLeft = convertArrowToTopLeft(arrow);
+            //     // bounced
+            //     ballsBouncing.map((ball) => {
+            //         const topLeft = convertBallToTopLeft(ball);
 
-                    sketch.push();
-                    sketch.strokeWeight(0);
-                    sketch.fill(255, 255, 255);
-                    translateAndRotate(topLeft, sketch, arrow.vector, cellSize);
-                    triangleRotatingArray[bouncedRotation](cellSize, sketch, percentage);
+            //         sketch.push();
+            //         sketch.strokeWeight(0);
+            //         sketch.fill(255, 255, 255);
+            //         translateAndRotate(topLeft, sketch, ball.vector, cellSize);
+            //         triangleRotatingArray[bouncedRotation](cellSize, sketch, percentage);
 
-                    sketch.pop();
-                    return undefined;
-                });
-                return undefined;
-            });
+            //         sketch.pop();
+            //         return undefined;
+            //     });
+            //     return undefined;
+            // });
 
             // draw hover input
             sketch.cursor(sketch.CROSS);
@@ -323,7 +303,7 @@ export const setUpCanvas = (state) => {
             if (!stateDrawing.deleting) {
                 sketch.cursor(sketch.HAND);
                 // triangleDrawingArray[stateDrawing.inputDirection](
-                //     convertArrowToTopLeft(
+                //     convertBallToTopLeft(
                 //         {
                 //             x: mouseXindex,
                 //             y: mouseYindex
@@ -340,8 +320,8 @@ export const setUpCanvas = (state) => {
             //         sketch.mouseY > 0 + gridCanvasBorderSize &&
             //         sketch.mouseY < gridCanvasSize - gridCanvasBorderSize
             //     ) {
-            //         if (arrowAdder) {
-            //             arrowAdder(mouseXindex, mouseYindex, e);
+            //         if (ballAdder) {
+            //             ballAdder(mouseXindex, mouseYindex, e);
             //             return false;
             //         }
             //     } else {

@@ -15,7 +15,7 @@ var _reactPlayerControls = require('react-player-controls');
 
 var _playNotes = require('./play-notes');
 
-var _arrowsLogic = require('./arrows-logic');
+var _ballsLogic = require('./balls-logic');
 
 var _animations = require('./animations');
 
@@ -52,8 +52,8 @@ const sound = {
 const interactSound = function (state) {
     return state.muted ? undefined : sound.play();
 };
-const putArrowsInGrid = function (arrows) {
-    return { "size": 8, "arrows": arrows, "muted": true };
+const putBallsInGrid = function (balls) {
+    return { "size": 8, "balls": balls, "muted": true };
 };
 class Application extends _react2.default.Component {
     constructor(props) {
@@ -114,7 +114,7 @@ class Application extends _react2.default.Component {
 
         this.nextGrid = function (length) {
             _this.setState({
-                grid: (0, _arrowsLogic.nextGrid)(_extends({}, _this.state.grid, {
+                grid: (0, _ballsLogic.nextGrid)(_extends({}, _this.state.grid, {
                     id: chance.guid(),
                     muted: _this.state.muted
                 }), length)
@@ -129,13 +129,13 @@ class Application extends _react2.default.Component {
 
         this.newGrid = function (number, size) {
             _this.setState({
-                grid: (0, _arrowsLogic.newGrid)(size, number)
+                grid: (0, _ballsLogic.newGrid)(size, number)
             });
         };
 
         this.emptyGrid = function () {
             _this.setState({
-                grid: (0, _arrowsLogic.emptyGrid)(_this.state.grid.size)
+                grid: (0, _ballsLogic.emptyGrid)(_this.state.grid.size)
             });
         };
 
@@ -157,17 +157,11 @@ class Application extends _react2.default.Component {
         this.addToGrid = function (x, y, e) {
             if (e.shiftKey || _this.state.deleting) {
                 _this.setState({
-                    grid: (0, _arrowsLogic.removeFromGrid)(_this.state.grid, x, y)
+                    grid: (0, _ballsLogic.removeFromGrid)(_this.state.grid, x, y)
                 });
             } else {
-                const symmetries = {
-                    horizontalSymmetry: _this.state.horizontalSymmetry,
-                    verticalSymmetry: _this.state.verticalSymmetry,
-                    backwardDiagonalSymmetry: _this.state.backwardDiagonalSymmetry,
-                    forwardDiagonalSymmetry: _this.state.forwardDiagonalSymmetry
-                };
                 _this.setState({
-                    grid: (0, _arrowsLogic.addToGrid)(_this.state.grid, x, y, _this.state.inputDirection, symmetries, _this.state.inputNumber)
+                    grid: (0, _ballsLogic.addToGrid)(_this.state.grid, x, y, _this.state.inputDirection, _this.state.inputNumber, 1)
                 });
             }
         };
@@ -194,7 +188,7 @@ class Application extends _react2.default.Component {
             presets: _presets2.default,
             inputDirection: 0,
             noteLength: props.noteLength || 275,
-            grid: props.grid || (0, _arrowsLogic.newGrid)(11, 0),
+            grid: props.grid || (0, _ballsLogic.newGrid)(11, 0),
             playing: false,
             muted: true,
             deleting: false,
@@ -272,7 +266,7 @@ class Application extends _react2.default.Component {
                         },
                         _react2.default.createElement('input', {
                             id: 'note-length-slider',
-                            className: 'arrow-input',
+                            className: 'ball-input',
                             type: 'range',
                             max: maxNoteLength,
                             min: minNoteLength,
@@ -319,12 +313,12 @@ class Application extends _react2.default.Component {
                         {
                             className: 'edit-options-member',
                             'data-step': '8',
-                            'data-intro': 'Delete some arrows by clicking on them.'
+                            'data-intro': 'Delete some balls by clicking on them.'
                         },
                         _react2.default.createElement('div', {
                             id: 'sketch-holder',
                             'data-step': '2',
-                            'data-intro': 'Click on the grid to draw an Arrow.',
+                            'data-intro': 'Click on the grid to draw an Ball.',
                             onClick: (0, _animations.getAdderWithMousePosition)(this.addToGrid)
                         })
                     )
@@ -340,7 +334,7 @@ class Application extends _react2.default.Component {
                     {
                         className: 'edit-options-member',
                         'data-step': '11',
-                        'data-intro': 'Change the arrow direction.'
+                        'data-intro': 'Change the ball direction.'
                     },
                     [_react2.default.createElement(_arrowButton.ArrowButton, {
                         number: this.state.inputNumber,
@@ -382,7 +376,7 @@ class Application extends _react2.default.Component {
                         },
                         _react2.default.createElement('input', {
                             id: 'grid-size-slider',
-                            className: 'arrow-input',
+                            className: 'ball-input',
                             type: 'range',
                             max: maxSize,
                             min: minSize,
@@ -514,7 +508,7 @@ class Application extends _react2.default.Component {
             ),
             _react2.default.createElement(
                 'select',
-                { id: 'midiOut', className: 'arrow-input' },
+                { id: 'midiOut', className: 'ball-input' },
                 _react2.default.createElement(
                     'option',
                     { value: '' },

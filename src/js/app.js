@@ -14,7 +14,7 @@ import {
     nextGrid,
     removeFromGrid,
     addToGrid
-} from './arrows-logic';
+} from './balls-logic';
 import {
     updateCanvas,
     setUpCanvas,
@@ -50,7 +50,7 @@ const sound = ({
     }
 });
 const interactSound = (state) => (state.muted ? undefined : sound.play());
-const putArrowsInGrid = (arrows) => ({"size":8,"arrows":arrows,"muted":true});
+const putBallsInGrid = (balls) => ({"size":8,"balls":balls,"muted":true});
 export class Application extends React.Component {
     constructor(props) {
         super(props);
@@ -175,14 +175,8 @@ export class Application extends React.Component {
                 grid: removeFromGrid(this.state.grid, x, y)
             });
         } else {
-            const symmetries = {
-                horizontalSymmetry: this.state.horizontalSymmetry,
-                verticalSymmetry: this.state.verticalSymmetry,
-                backwardDiagonalSymmetry: this.state.backwardDiagonalSymmetry,
-                forwardDiagonalSymmetry: this.state.forwardDiagonalSymmetry
-            };
             this.setState({
-                grid: addToGrid(this.state.grid, x, y, this.state.inputDirection, symmetries, this.state.inputNumber)
+                grid: addToGrid(this.state.grid, x, y, this.state.inputDirection, this.state.inputNumber, 1)
             });
         }
     }
@@ -247,7 +241,7 @@ export class Application extends React.Component {
                         >
                             <input
                                 id="note-length-slider"
-                                className="arrow-input"
+                                className="ball-input"
                                 type="range"
                                 max={maxNoteLength}
                                 min={minNoteLength}
@@ -284,12 +278,12 @@ export class Application extends React.Component {
                         <div
                             className="edit-options-member"
                             data-step="8"
-                            data-intro="Delete some arrows by clicking on them."
+                            data-intro="Delete some balls by clicking on them."
                         >
                             <div
                                 id="sketch-holder"
                                 data-step="2"
-                                data-intro="Click on the grid to draw an Arrow."
+                                data-intro="Click on the grid to draw an Ball."
                                 onClick={getAdderWithMousePosition(this.addToGrid)}
                             />
                         </div>
@@ -301,7 +295,7 @@ export class Application extends React.Component {
                 <div 
                         className="edit-options-member"
                         data-step="11"
-                        data-intro="Change the arrow direction."
+                        data-intro="Change the ball direction."
                     >
                     {
                         [
@@ -349,7 +343,7 @@ export class Application extends React.Component {
                         >
                             <input
                                 id="grid-size-slider"
-                                className="arrow-input" 
+                                className="ball-input" 
                                 type="range"
                                 max={maxSize}
                                 min={minSize}
@@ -465,7 +459,7 @@ export class Application extends React.Component {
                         </button> 
                     </div>
                 </div>
-                <select id="midiOut" className="arrow-input">
+                <select id="midiOut" className="ball-input">
                     <option value="">Not connected</option>
                 </select>
             </div>

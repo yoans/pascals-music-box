@@ -28,18 +28,18 @@ const NO_BOUNDARY = exports.NO_BOUNDARY = 'no-boundary';
 const BOUNDARY = exports.BOUNDARY = 'boundary';
 const vectors = ['ball-up-right', 'ball-right', 'ball-down-right', 'ball-down-left', 'ball-left', 'ball-up-left'];
 const vectorNumber = vectors.length;
-const vectorOperations = [function ({ x, y, vector, velocity }) {
-    return { x: x + velocity, y: y - velocity, vector };
-}, function ({ x, y, vector, velocity }) {
-    return { x: x + velocity, y, vector };
-}, function ({ x, y, vector, velocity }) {
-    return { x, y: y + velocity, vector };
-}, function ({ x, y, vector, velocity }) {
-    return { x: x - velocity, y: y + velocity, vector };
-}, function ({ x, y, vector, velocity }) {
-    return { x, y: y + velocity, vector };
-}, function ({ x, y, vector, velocity }) {
-    return { x: x - velocity, y, vector };
+const vectorOperations = [function ({ x, y, vector, speed }) {
+    return { x: x + speed, y: y - speed, vector, speed };
+}, function ({ x, y, vector, speed }) {
+    return { x: x + speed, y, vector, speed };
+}, function ({ x, y, vector, speed }) {
+    return { x, y: y + speed, vector, speed };
+}, function ({ x, y, vector, speed }) {
+    return { x: x - speed, y: y + speed, vector, speed };
+}, function ({ x, y, vector, speed }) {
+    return { x: x - speed, y, vector, speed };
+}, function ({ x, y, vector, speed }) {
+    return { x, y: y - speed, vector, speed };
 }];
 const getVector = function () {
     return chance.natural({
@@ -47,7 +47,7 @@ const getVector = function () {
         max: 5
     });
 };
-const getVelocity = function (size) {
+const getSpeed = function (size) {
     return chance.pickone(R.range(2, size).map(function (n) {
         return 1.0 / n;
     }));
@@ -68,7 +68,7 @@ const getBall = function (size) {
             x: getRandomNumber(size),
             y: getRandomNumber(size),
             vector: getVector(),
-            velocity: getVelocity(size)
+            speed: getSpeed(size)
         };
     };
 };
@@ -82,14 +82,14 @@ const removeFromGrid = exports.removeFromGrid = function (grid, x, y) {
     return nextGrid;
 };
 
-const addToGrid = exports.addToGrid = function (grid, x, y, dir, velocity) {
+const addToGrid = exports.addToGrid = function (grid, x, y, dir, speed) {
     const nextGrid = _extends({}, grid, {
         id: chance.guid(),
         balls: [...grid.balls, {
             x,
             y,
             vector: dir,
-            velocity
+            speed
         }]
     });
     return nextGrid;
@@ -182,20 +182,25 @@ const nextGrid = exports.nextGrid = function (grid, length) {
         const reducedBallsAtIndex = R.take(ballsAtIndex.length % vectorNumber || vectorNumber, ballsAtIndex);
         return [...acc, ...reducedBallsAtIndex];
     }, []).filter(function (ball) {
-        return ball.x + ball.y >= 0 && ball.x < size && ball.y < size;
+        return ball.x + ball.y < size && ball.x < size && ball.y < size;
     });
     const ballSetDictionary = getBallBoundaryDictionary(reducedBalls, size, locationKey);
     const ballSets = Object.keys(ballSetDictionary).map(function (key) {
         return ballSetDictionary[key];
     });
-    const rotatedBalls = ballSets.map(rotateSet);
+    const rotatedBalls = ballSets; //.map(rotateSet);
     const flatRotatedBalls = rotatedBalls.reduce(function (accum, current) {
         return [...accum, ...current];
     }, []);
     const ballBoundaryDictionary = getBallBoundaryDictionary(flatRotatedBalls, size, ballBoundaryKey);
-    const movedBallsInMiddle = newArrayIfFalsey(ballBoundaryDictionary[NO_BOUNDARY]).map(moveBall);
-    const movedFlippedBoundaryBalls = newArrayIfFalsey(ballBoundaryDictionary[BOUNDARY]).map(flipBall).map(moveBall);
-    const nextGridBalls = [...movedBallsInMiddle, ...movedFlippedBoundaryBalls];
+    const ballsInMiddle = newArrayIfFalsey(ballBoundaryDictionary[NO_BOUNDARY]);
+    console.log({ balls });
+    const flippedBoundaryBalls = newArrayIfFalsey(ballBoundaryDictionary[BOUNDARY]).map(flipBall);
+
+    const secondBoundaryDictionary = getBallBoundaryDictionary(flippedBoundaryBalls, size, ballBoundaryKey);
+    flippedBoundaryBalls.filter;
+    const doublyFlippedBoundaryBalls = newArrayIfFalsey(secondBoundaryDictionary[BOUNDARY]).map(flipBall);
+    const nextGridBalls = [...ballsInMiddle, ...newArrayIfFalsey(secondBoundaryDictionary[NO_BOUNDARY]), ...doublyFlippedBoundaryBalls].map(moveBall);
     const noisyBallBoundaryDictionary = getBallBoundaryDictionary(nextGridBalls, size, ballBoundaryKey);
     (0, _playNotes.playSounds)(newArrayIfFalsey(noisyBallBoundaryDictionary[BOUNDARY]), size, length, grid.muted);
     return _extends({}, grid, {
