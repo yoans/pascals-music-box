@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.nextGrid = exports.getBallBoundaryDictionary = exports.boundaryKey = exports.ballBoundaryKey = exports.locationKey = exports.ballKey = exports.emptyGrid = exports.newGrid = exports.addToGrid = exports.removeFromGrid = exports.BOUNDARY = exports.NO_BOUNDARY = undefined;
+exports.nextGrid = exports.getBallBoundaryDictionary = exports.flipBall = exports.boundaryKey = exports.ballBoundaryKey = exports.locationKey = exports.ballKey = exports.emptyGrid = exports.newGrid = exports.addToGrid = exports.removeFromGrid = exports.BOUNDARY = exports.NO_BOUNDARY = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -159,6 +159,7 @@ const flipBall = function (_ref) {
 
     return _extends({ vector: flipVector(vector) }, rest);
 };
+exports.flipBall = flipBall;
 const getBallBoundaryDictionary = exports.getBallBoundaryDictionary = function (balls, size, keyFunc, rotations) {
     return balls.reduce(function (ballDictionary, ball) {
         const key = keyFunc(ball, size, rotations);
@@ -188,13 +189,12 @@ const nextGrid = exports.nextGrid = function (grid, length) {
     const ballSets = Object.keys(ballSetDictionary).map(function (key) {
         return ballSetDictionary[key];
     });
-    const rotatedBalls = ballSets; //.map(rotateSet);
+    const rotatedBalls = ballSets.map(rotateSet);
     const flatRotatedBalls = rotatedBalls.reduce(function (accum, current) {
         return [...accum, ...current];
     }, []);
     const ballBoundaryDictionary = getBallBoundaryDictionary(flatRotatedBalls, size, ballBoundaryKey);
     const ballsInMiddle = newArrayIfFalsey(ballBoundaryDictionary[NO_BOUNDARY]);
-    console.log({ balls });
     const flippedBoundaryBalls = newArrayIfFalsey(ballBoundaryDictionary[BOUNDARY]).map(flipBall);
 
     const secondBoundaryDictionary = getBallBoundaryDictionary(flippedBoundaryBalls, size, ballBoundaryKey);
