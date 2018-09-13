@@ -23,8 +23,13 @@ const triangleSize = 320;
 const gridCanvasWidth = triangleSize * 2.0;
 const gridCanvasHeight = Math.floor(triangleSize * sqrtThree);
 const gridCanvasBorderSize = 1;
-const convertPixelToIndex = function (pixel) {
-    return Math.floor((pixel - gridCanvasBorderSize) / cellSize);
+const convertExWhyPixelToIndex = function (x, y) {
+    const whyIndex = Math.floor((y - gridCanvasBorderSize) / (cellSize * sqrtThree / 2));
+    const exIndex = Math.floor((x - gridCanvasBorderSize - whyIndex * cellSize / 2) / cellSize);
+    return {
+        x: exIndex,
+        y: whyIndex
+    };
 };
 // const nat = () => chance.natural({
 //     min: 0,
@@ -33,9 +38,8 @@ const convertPixelToIndex = function (pixel) {
 const getAdderWithMousePosition = exports.getAdderWithMousePosition = function (ballAdder) {
     return function (e) {
         if (mouseX > 0 + gridCanvasBorderSize && mouseX < gridCanvasWidth - gridCanvasBorderSize && mouseY > 0 + gridCanvasBorderSize && mouseY < gridCanvasHeight - gridCanvasBorderSize) {
-            const mouseXindex = convertPixelToIndex(mouseX);
-            const mouseYindex = convertPixelToIndex(mouseY);
-            ballAdder(mouseXindex, mouseYindex, e);
+            const mouseXYindex = convertExWhyPixelToIndex(mouseX, mouseY);
+            ballAdder(mouseXYindex.x, mouseXYindex.y, e);
         } else {}
     };
 };
@@ -43,7 +47,7 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
     stateDrawing = state;
     previousTime = new Date();
     const triangleDrawingArray = function (topLeft, cellSize, sketch) {
-        return sketch.ellipse(topLeft.x + cellSize / 2.0, topLeft.y + cellSize / 2.0,
+        return sketch.ellipse(topLeft.x + cellSize / 2.0, topLeft.y + sqrtThree * cellSize / 4.0,
         // cellSize*0.57735026918962,
         // cellSize*0.57735026918962
         cellSize * 0.4, cellSize * 0.4);
@@ -82,7 +86,7 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
             // draw background slash border
             sketch.background(255, 255, 255);
             // draw grid
-            cellSize = gridCanvasWidth * 1.0 / (1.0 * gridSize - 1);
+            cellSize = gridCanvasWidth * 1.0 / (1.0 * gridSize);
             sketch.strokeWeight(0);
             sketch.fill(0, 0, 0);
             sketch.triangle(gridCanvasBorderSize, gridCanvasBorderSize, gridCanvasWidth + gridCanvasBorderSize, gridCanvasBorderSize, (gridCanvasBorderSize * 2 + gridCanvasWidth) / 2.0, gridCanvasBorderSize + gridCanvasHeight);
@@ -90,7 +94,7 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
             sketch.push();
             sketch.stroke(45, 45, 45);
             sketch.strokeWeight(1);
-            for (var i = 1; i < gridSize - 1; i++) {
+            for (var i = 1; i < gridSize; i++) {
                 // horizontal
                 sketch.line(1 + gridCanvasBorderSize + i * cellSize / 2.0, 1 + gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0, gridCanvasWidth - i * cellSize / 2.0, 1 + gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0);
                 // forward-vertical
@@ -246,8 +250,8 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
 
             // draw hover input
             sketch.cursor(sketch.CROSS);
-            const mouseXindex = convertPixelToIndex(sketch.mouseX);
-            const mouseYindex = convertPixelToIndex(sketch.mouseY);
+            const mouseXindex = convertExWhyPixelToIndex(sketch.mouseX);
+            const mouseYindex = convertExWhyPixelToIndex(sketch.mouseY);
             if (!stateDrawing.deleting) {
                 sketch.cursor(sketch.HAND);
                 // triangleDrawingArray[stateDrawing.inputDirection](
