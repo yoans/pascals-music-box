@@ -5,7 +5,8 @@ import {
     getBallBoundaryDictionary,
     locationKey,
     ballBoundaryKey,
-    boundaryKey
+    boundaryKey,
+    flipBall
 } from './balls-logic';
 
 let stateDrawing;
@@ -13,8 +14,11 @@ let previousTime;
 let mouseX = 1;
 let mouseY = 1;
 let cellSize = 1;
-const gridCanvasSize = 320;
-const gridCanvasBorderSize = 2;
+const sqrtThree = 1.7320508075688772935274463415059;
+const triangleSize = 320;
+const gridCanvasWidth = triangleSize*2.0;
+const gridCanvasHeight = Math.floor(triangleSize*sqrtThree);
+const gridCanvasBorderSize = 1;
 const convertPixelToIndex = pixel => Math.floor(
     (pixel - gridCanvasBorderSize) / cellSize
 );
@@ -22,24 +26,11 @@ const convertPixelToIndex = pixel => Math.floor(
 //     min: 0,
 //     max: 255,
 // });
-export const newTriangleDrawing = () => {
-      
-        var step = frameCount % 20;
-        var angle = map(step, 0, 20, 0,3*PI / 16);
-        background(200);
-        translate(50, 50);
-        // equivalent to shearX(angle);
-        var shear_factor = 1 / tan(PI / 2 - angle);
-        applyMatrix(1, 0, shear_factor, 1, 0, 0);
-        line(0, 0, 0, 25);
-        line(0, 0, 25, 0);
-        line(0, 25, 25, 0);
-}
 export const getAdderWithMousePosition = (ballAdder) => (e) => {
     if (mouseX > 0 + gridCanvasBorderSize &&
-        mouseX < gridCanvasSize - gridCanvasBorderSize &&
+        mouseX < gridCanvasWidth - gridCanvasBorderSize &&
         mouseY > 0 + gridCanvasBorderSize &&
-        mouseY < gridCanvasSize - gridCanvasBorderSize
+        mouseY < gridCanvasHeight - gridCanvasBorderSize
     ) {
         const mouseXindex = convertPixelToIndex(mouseX);
         const mouseYindex = convertPixelToIndex(mouseY);
@@ -53,8 +44,10 @@ export const setUpCanvas = (state) => {
     const triangleDrawingArray = (topLeft, cellSize, sketch) => sketch.ellipse(
         topLeft.x + (cellSize / 2.0),
         topLeft.y + (cellSize / 2.0),
-        cellSize,
-        cellSize
+        // cellSize*0.57735026918962,
+        // cellSize*0.57735026918962
+        cellSize*0.4,
+        cellSize*0.4
     );
     const triangleRotatingArray = [
 
@@ -85,14 +78,14 @@ export const setUpCanvas = (state) => {
         sketch.angleMode(sketch.DEGREES);
         sketch.rotate(90 * vector);
     };
-    const timeShift = ({ x, y }, vector, shiftAmount) => {
+    const timeShift = ({ x, y }, vector, percentage, cellSize) => {
         const shifted = [
-            { x: x + shiftAmount, y: y - shiftAmount },
-            { x: x + shiftAmount, y },
-            { x, y: y + shiftAmount },
-            { x: x - shiftAmount, y: y + shiftAmount },
-            { x: x - shiftAmount, y },
-            { x, y: y - shiftAmount },
+            { x: x + percentage*cellSize/2.0, y: y - percentage*cellSize * sqrtThree / 2.0 },
+            { x: x + percentage*cellSize, y },
+            { x: x + percentage*cellSize/2.0, y: y + percentage*cellSize * sqrtThree / 2.0 },
+            { x: x - percentage*cellSize/2.0, y: y + percentage*cellSize * sqrtThree / 2.0 },
+            { x: x - percentage*cellSize, y },
+            { x: x - percentage*cellSize/2.0, y: y - percentage*cellSize * sqrtThree / 2.0 },
         ];
         return shifted[vector];
     };
@@ -100,38 +93,56 @@ export const setUpCanvas = (state) => {
     const drawingContext = (sketch) => {
         // eslint-disable-next-line no-param-reassign
         sketch.setup = () => {
-            sketch.createCanvas(gridCanvasSize + gridCanvasBorderSize * 2, gridCanvasSize + gridCanvasBorderSize * 2).parent('sketch-holder').id('balls-animation');
+            sketch.createCanvas(gridCanvasWidth + gridCanvasBorderSize * 2, gridCanvasHeight + gridCanvasBorderSize * 2).parent('sketch-holder').id('balls-animation');
         };
         // eslint-disable-next-line no-param-reassign
         sketch.draw = () => {
+            const gridSize = stateDrawing.grid.size;
             mouseX = sketch.mouseX;
             mouseY = sketch.mouseY;
             // draw background slash border
             sketch.background(255, 255, 255);
             // draw grid
+            cellSize = (gridCanvasWidth * 1.0) / (1.0 * gridSize-1);
             sketch.strokeWeight(0);
             sketch.fill(0, 0, 0);
-            sketch.rect(gridCanvasBorderSize, gridCanvasBorderSize, gridCanvasSize, gridCanvasSize);
+            sketch.triangle(gridCanvasBorderSize, gridCanvasBorderSize, gridCanvasWidth+gridCanvasBorderSize, gridCanvasBorderSize,(gridCanvasBorderSize*2+gridCanvasWidth)/2.0, gridCanvasBorderSize+gridCanvasHeight);
             //draw grid lines
-            cellSize = (gridCanvasSize * 1.0) / (1.0 * stateDrawing.grid.size);
             sketch.push();
             sketch.stroke(45, 45, 45);
-            sketch.strokeWeight(2);
-            for (var i=1; i<stateDrawing.grid.size; i++) {
+            sketch.strokeWeight(1);
+            for (var i=1; i<gridSize-1; i++) {
                 // horizontal
-                sketch.line(1+gridCanvasBorderSize, 1+gridCanvasBorderSize + i * cellSize, gridCanvasSize, 1 + i * cellSize);
-                // vertical
-                sketch.line(1+gridCanvasBorderSize + i * cellSize, 1+gridCanvasBorderSize, 1 + i * cellSize, gridCanvasSize,);
+                sketch.line(
+                    1 + gridCanvasBorderSize + i * cellSize/2.0,
+                    1+gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0,
+                    gridCanvasWidth - i * cellSize/2.0,
+                    1+gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0
+                );
+                // forward-vertical
+                sketch.line(
+                    1 + gridCanvasBorderSize + i * cellSize/2.0,
+                    1+gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0,
+                    1 + i * cellSize,
+                    1+gridCanvasBorderSize
+                );
+                // backward-vertical
+                sketch.line(
+                    1 + i * cellSize,
+                    1+gridCanvasBorderSize,
+                    1 + gridCanvasBorderSize + gridCanvasWidth/2.0 + i * cellSize/2.0,
+                    gridCanvasHeight - i * cellSize * sqrtThree / 2.0
+                );
             }
             sketch.pop();
 
             sketch.fill(255, 255, 255);
             sketch.strokeWeight(0);
-            const convertIndexToPixel = index => (index * cellSize) + gridCanvasBorderSize;
-            const convertBallToTopLeft = xy => (
+            // const convertIndexToPixel = index => (index * cellSize) + gridCanvasBorderSize;
+            const convertBallToMiddle = xy => (
                 {
-                    x: convertIndexToPixel(xy.x),
-                    y: convertIndexToPixel(xy.y)
+                    x: gridCanvasBorderSize + xy.x * cellSize + xy.y * cellSize / 2.0,
+                    y: gridCanvasBorderSize + xy.y * cellSize * sqrtThree / 2.0
                 }
             );
             const timeDiff = new Date().getTime() - previousTime.getTime();
@@ -143,52 +154,52 @@ export const setUpCanvas = (state) => {
             const percentage = possiblePercentage > 1 ? 1 : possiblePercentage;
             const boundaryDictionary = getBallBoundaryDictionary(
                 stateDrawing.grid.balls || [],
-                stateDrawing.grid.size,
+                gridSize,
                 boundaryKey
             );
             const boundaryDictionaryX = boundaryDictionary['x'] || [];
             const boundaryDictionaryY = boundaryDictionary['y'] || [];
-            // draw highlighted rows and columns
+            // // draw highlighted rows and columns
             
-            if (stateDrawing.playing) {
-                const prepareDrawForColumnsAndRows = (topLeft) => {
-                    sketch.push();
-                    sketch.strokeWeight(0);
-                    // const scaledColor = 255*percentage*2+(percentage>.5?(-255*(percentage-.5)*2*2):0);
-                    const scaledColor = 255 - 255 * percentage;
-                    sketch.fill(scaledColor, scaledColor, scaledColor, scaledColor);
-                    translateAndRotate(topLeft, sketch, 0, cellSize);
-                    return scaledColor;
-                }
-                boundaryDictionaryX.map((ball) => {
-                    const topLeft = {
-                        x:convertIndexToPixel(0),
-                        y:convertIndexToPixel(ball.y)
-                    };
+            // if (stateDrawing.playing) {
+            //     const prepareDrawForColumnsAndRows = (topLeft) => {
+            //         sketch.push();
+            //         sketch.strokeWeight(0);
+            //         // const scaledColor = 255*percentage*2+(percentage>.5?(-255*(percentage-.5)*2*2):0);
+            //         const scaledColor = 255 - 255 * percentage;
+            //         sketch.fill(scaledColor, scaledColor, scaledColor, scaledColor);
+            //         translateAndRotate(topLeft, sketch, 0, cellSize);
+            //         return scaledColor;
+            //     }
+            //     boundaryDictionaryX.map((ball) => {
+            //         const topLeft = {
+            //             x:convertIndexToPixel(0),
+            //             y:convertIndexToPixel(ball.y)
+            //         };
 
-                    prepareDrawForColumnsAndRows(topLeft);
-                    sketch.rect(0, 0, cellSize*stateDrawing.grid.size, cellSize)
+            //         prepareDrawForColumnsAndRows(topLeft);
+            //         sketch.rect(0, 0, cellSize*stateDrawing.grid.size, cellSize)
 
-                    sketch.pop();
-                    return undefined;
-                });
-                boundaryDictionaryY.map((ball) => {
-                    const topLeft = {
-                        x:convertIndexToPixel(ball.x),
-                        y:convertIndexToPixel(0)
-                    };
-                    prepareDrawForColumnsAndRows(topLeft);
-                    sketch.rect(0, 0, cellSize, cellSize*stateDrawing.grid.size)
+            //         sketch.pop();
+            //         return undefined;
+            //     });
+            //     boundaryDictionaryY.map((ball) => {
+            //         const topLeft = {
+            //             x:convertIndexToPixel(ball.x),
+            //             y:convertIndexToPixel(0)
+            //         };
+            //         prepareDrawForColumnsAndRows(topLeft);
+            //         sketch.rect(0, 0, cellSize, cellSize*stateDrawing.grid.size)
 
-                    sketch.pop();
-                    return undefined;
-                });
-            }
+            //         sketch.pop();
+            //         return undefined;
+            //     });
+            // }
             // draw balls
 
             const ballLocationDictionary = getBallBoundaryDictionary(
                 stateDrawing.grid.balls,
-                stateDrawing.grid.size,
+                gridSize,
                 locationKey
             );
 
@@ -207,36 +218,47 @@ export const setUpCanvas = (state) => {
             // non-wall Balls
             const ballDictionary = getBallBoundaryDictionary(
                 ballsToNotRotateDictionary,
-                stateDrawing.grid.size,
+                gridSize,
                 ballBoundaryKey
             );
             (ballDictionary[NO_BOUNDARY] || []).map((ball) => {
                 const shiftedTopLeft = timeShift(
-                    convertBallToTopLeft(ball),
+                    convertBallToMiddle(ball),
                     ball.vector,
-                    cellSize * percentage
+                    percentage,
+                    cellSize
                 );
                 // const triangleDrawer = triangleDrawingArray[ball.vector];
                 triangleDrawingArray(shiftedTopLeft, cellSize, sketch);
                 return undefined;
             });
-            // // wall Balls
-            // (ballDictionary[BOUNDARY] || []).map((ball) => {
-            //     sketch.push();
-            //     sketch.strokeWeight(0);
-            //     sketch.fill(255, 255, 255);
-            //     const topLeft = convertBallToTopLeft(ball);
-            //     translateAndRotate(topLeft, sketch, ball.vector, cellSize);
-            //     sketch.quad(
-            //         0, cellSize,
-            //         cellSize / 2, cellSize * percentage,
-            //         cellSize, cellSize,
-            //         cellSize / 2, cellSize + cellSize * percentage
-            //     );
-            //     sketch.pop();
-            //     return undefined;
-            // });
-            // // rotating Balls
+            // wall Balls
+            (ballDictionary[BOUNDARY] || []).map((ball) => {
+                sketch.push();
+                sketch.strokeWeight(0);
+                sketch.fill(255, 255, 255);
+                // const topLeft = convertBallToTopLeft(ball);
+                // translateAndRotate(topLeft, sketch, ball.vector, cellSize);
+                // sketch.quad(
+                //     0, cellSize,
+                //     cellSize / 2, cellSize * percentage,
+                //     cellSize, cellSize,
+                //     cellSize / 2, cellSize + cellSize * percentage
+                // );
+                triangleDrawingArray(
+                    timeShift(
+                        convertBallToMiddle(ball),
+                        flipBall(ball).vector,
+                        percentage,
+                        cellSize
+                    ),
+                    cellSize,
+                    sketch
+                )
+                sketch.pop();
+                return undefined;
+            });
+            // rotating Balls
 
             // const ballsToRotateDictionary = Object.keys(ballLocationDictionary).reduce(
             //     (acc, location) => (

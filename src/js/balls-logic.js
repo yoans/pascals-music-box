@@ -107,7 +107,7 @@ const rotateBall = number => ball => ({
 });
 const rotateSet = set => set.map(rotateBall(set.length));
 const flipVector = vector => [2,5,4,1,0,3][vector];
-const flipBall = ({ vector, ...rest }) => ({ vector: flipVector(vector), ...rest });
+export const flipBall = ({ vector, ...rest }) => ({ vector: flipVector(vector), ...rest });
 export const getBallBoundaryDictionary = (balls, size, keyFunc, rotations) => balls.reduce(
     (ballDictionary, ball) => {
         const key = keyFunc(ball, size, rotations);
@@ -141,7 +141,7 @@ export const nextGrid = (grid, length) => {
     ).filter(ball => ball.x + ball.y < size && ball.x < size && ball.y < size);
     const ballSetDictionary = getBallBoundaryDictionary(reducedBalls, size, locationKey);
     const ballSets = Object.keys(ballSetDictionary).map(key => ballSetDictionary[key]);
-    const rotatedBalls = ballSets//.map(rotateSet);
+    const rotatedBalls = ballSets.map(rotateSet);
     const flatRotatedBalls = rotatedBalls.reduce(
         (accum, current) => [...accum, ...current],
         []
@@ -152,7 +152,6 @@ export const nextGrid = (grid, length) => {
     const ballsInMiddle = newArrayIfFalsey(
         ballBoundaryDictionary[NO_BOUNDARY]
     );
-    console.log({balls})
     const flippedBoundaryBalls = newArrayIfFalsey(
         ballBoundaryDictionary[BOUNDARY]
     ).map(flipBall);
