@@ -141,7 +141,7 @@ export const nextGrid = (grid, length) => {
     ).filter(ball => ball.x + ball.y < size && ball.x < size && ball.y < size);
     const ballSetDictionary = getBallBoundaryDictionary(reducedBalls, size, locationKey);
     const ballSets = Object.keys(ballSetDictionary).map(key => ballSetDictionary[key]);
-    const rotatedBalls = ballSets.map(rotateSet);
+    const rotatedBalls = ballSets//.map(rotateSet);
     const flatRotatedBalls = rotatedBalls.reduce(
         (accum, current) => [...accum, ...current],
         []

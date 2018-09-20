@@ -189,7 +189,7 @@ const nextGrid = exports.nextGrid = function (grid, length) {
     const ballSets = Object.keys(ballSetDictionary).map(function (key) {
         return ballSetDictionary[key];
     });
-    const rotatedBalls = ballSets.map(rotateSet);
+    const rotatedBalls = ballSets; //.map(rotateSet);
     const flatRotatedBalls = rotatedBalls.reduce(function (accum, current) {
         return [...accum, ...current];
     }, []);

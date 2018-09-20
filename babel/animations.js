@@ -161,7 +161,10 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
 
             // non-rotated balls
             const ballsToNotRotateDictionary = Object.keys(ballLocationDictionary).reduce(function (acc, location) {
-                return ballLocationDictionary[location].length === 1 ? [...acc, ...ballLocationDictionary[location]] : acc;
+                return (
+                    // ballLocationDictionary[location].length === 1 ?
+                    1 ? [...acc, ...ballLocationDictionary[location]] : acc
+                );
             }, []);
             // non-wall Balls
             const ballDictionary = (0, _ballsLogic.getBallBoundaryDictionary)(ballsToNotRotateDictionary, gridSize, _ballsLogic.ballBoundaryKey);
@@ -176,14 +179,6 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
                 sketch.push();
                 sketch.strokeWeight(0);
                 sketch.fill(255, 255, 255);
-                // const topLeft = convertBallToTopLeft(ball);
-                // translateAndRotate(topLeft, sketch, ball.vector, cellSize);
-                // sketch.quad(
-                //     0, cellSize,
-                //     cellSize / 2, cellSize * percentage,
-                //     cellSize, cellSize,
-                //     cellSize / 2, cellSize + cellSize * percentage
-                // );
                 triangleDrawingArray(timeShift(convertBallToMiddle(ball), (0, _ballsLogic.flipBall)(ball).vector, percentage, cellSize), cellSize, sketch);
                 sketch.pop();
                 return undefined;
