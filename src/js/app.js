@@ -81,6 +81,7 @@ export class Application extends React.Component {
             {id: '#note-length-slider', onChange: this.newNoteLength}
         ]
         setSliderOnChange(idsAndCallbacks);
+        getAdderWithMousePosition(this.addToGrid)()
     }
 
     timerID = undefined

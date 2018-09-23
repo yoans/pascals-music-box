@@ -14,10 +14,14 @@ var _ballsLogic = require('./balls-logic');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 let stateDrawing;
+let mouseIsPressed;
 let previousTime;
 let mouseX = 1;
 let mouseY = 1;
+let mouseXstart = 1;
+let mouseYstart = 1;
 let cellSize = 1;
+let thisBallAdder = function () {};
 const sqrtThree = 1.7320508075688772935274463415059;
 const triangleSize = 320;
 const gridCanvasWidth = triangleSize * 2.0;
@@ -35,9 +39,13 @@ const convertExWhyPixelToIndex = function (x, y) {
 //     min: 0,
 //     max: 255,
 // });
+const mouseIsInSketch = function () {
+    return mouseX > 0 + gridCanvasBorderSize && mouseX < gridCanvasWidth - gridCanvasBorderSize && mouseY > 0 + gridCanvasBorderSize && mouseY < gridCanvasHeight - gridCanvasBorderSize;
+};
 const getAdderWithMousePosition = exports.getAdderWithMousePosition = function (ballAdder) {
     return function (e) {
-        if (mouseX > 0 + gridCanvasBorderSize && mouseX < gridCanvasWidth - gridCanvasBorderSize && mouseY > 0 + gridCanvasBorderSize && mouseY < gridCanvasHeight - gridCanvasBorderSize) {
+        thisBallAdder = ballAdder;
+        if (mouseIsInSketch()) {
             const mouseXYindex = convertExWhyPixelToIndex(mouseX, mouseY);
             ballAdder(mouseXYindex.x, mouseXYindex.y, e);
         } else {}
@@ -47,10 +55,10 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
     stateDrawing = state;
     previousTime = new Date();
     const triangleDrawingArray = function (topLeft, cellSize, sketch) {
-        return sketch.ellipse(topLeft.x + cellSize / 2.0, topLeft.y + sqrtThree * cellSize / 4.0,
+        return sketch.ellipse(topLeft.x + cellSize / 2.0, topLeft.y + sqrtThree * cellSize / 6,
         // cellSize*0.57735026918962,
         // cellSize*0.57735026918962
-        cellSize * 0.4, cellSize * 0.4);
+        cellSize * sqrtThree / 3, cellSize * sqrtThree / 3);
     };
     const triangleRotatingArray = [function (cellSize, sketch, percentage) {
         return sketch.triangle(cellSize / 2.0, -(cellSize * percentage), cellSize, cellSize - cellSize * percentage, 0, cellSize - cellSize * percentage);
@@ -85,6 +93,50 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
             mouseY = sketch.mouseY;
             // draw background slash border
             sketch.background(255, 255, 255);
+
+            mouseIsPressed = sketch.mouseIsPressed;
+
+            const setMouseStart = function (e) {
+                mouseXstart = mouseX;
+                mouseYstart = mouseY;
+
+                if (mouseIsInSketch()) {
+                    thisBallAdder(mouseXindex, mouseYindex, e, true);
+                }
+            };
+            const setTouchStart = function (e) {
+                mouseXstart = mouseX;
+                mouseYstart = mouseY;
+
+                if (mouseIsPressed && mouseIsInSketch()) {
+                    thisBallAdder(mouseXindex, mouseYindex, e, true);
+                }
+            };
+            const sameAsStart = function () {
+                const { x: mouseXindex, y: mouseYindex } = convertExWhyPixelToIndex(mouseX, mouseY);
+                const { x: mouseXindexStart, y: mouseYindexStart } = convertExWhyPixelToIndex(mouseXstart, mouseYstart);
+                return mouseXindexStart === mouseXindex && mouseYindexStart === mouseYindex;
+            };
+            const setMouseEnd = function (e) {
+                mouseXstart = -1000;
+                mouseYstart = -1000;
+            };
+
+            sketch.touchStarted = setTouchStart;
+            sketch.touchEnded = setMouseEnd;
+            sketch.mousePressed = setMouseStart;
+            sketch.mouseReleased = setMouseEnd;
+
+            const onDrag = function (e) {
+
+                if (mouseIsPressed && mouseIsInSketch() && !sameAsStart()) {
+                    const { x: mouseXindex, y: mouseYindex } = convertExWhyPixelToIndex(mouseX, mouseY);
+                    thisBallAdder(mouseXindex, mouseYindex, e);
+                    e.preventDefault();
+                }
+            };
+            sketch.mouseDragged = onDrag;
+            sketch.touchMoved = onDrag;
             // draw grid
             cellSize = gridCanvasWidth * 1.0 / (1.0 * gridSize);
             sketch.strokeWeight(0);
@@ -94,7 +146,7 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
             sketch.push();
             sketch.stroke(45, 45, 45);
             sketch.strokeWeight(1);
-            for (var i = 1; i < gridSize; i++) {
+            for (var i = .5; i < gridSize; i++) {
                 // horizontal
                 sketch.line(1 + gridCanvasBorderSize + i * cellSize / 2.0, 1 + gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0, gridCanvasWidth - i * cellSize / 2.0, 1 + gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0);
                 // forward-vertical
@@ -175,13 +227,17 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
                 return undefined;
             });
             // wall Balls
-            (ballDictionary[_ballsLogic.BOUNDARY] || []).map(function (ball) {
+            const flippedBalls = (ballDictionary[_ballsLogic.BOUNDARY] || []).map(function (ball) {
                 sketch.push();
                 sketch.strokeWeight(0);
                 sketch.fill(255, 255, 255);
-                triangleDrawingArray(timeShift(convertBallToMiddle(ball), (0, _ballsLogic.flipBall)(ball).vector, percentage, cellSize), cellSize, sketch);
+                let flippedBall = (0, _ballsLogic.flipBall)(ball);
+                if (_ballsLogic.NO_BOUNDARY !== (0, _ballsLogic.ballBoundaryKey)(flippedBall, gridSize)) {
+                    flippedBall = (0, _ballsLogic.flipBall)(flippedBall);
+                }
+                triangleDrawingArray(timeShift(convertBallToMiddle(ball), flippedBall.vector, percentage, cellSize), cellSize, sketch);
                 sketch.pop();
-                return undefined;
+                return flippedBall;
             });
             // rotating Balls
 
@@ -260,20 +316,6 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
                 //     sketch
                 // );
             }
-            // eslint-disable-next-line no-param-reassign
-            // sketch.touchEnded = (e) => {
-            //     if (sketch.mouseX > 0 + gridCanvasBorderSize &&
-            //         sketch.mouseX < gridCanvasSize - gridCanvasBorderSize &&
-            //         sketch.mouseY > 0 + gridCanvasBorderSize &&
-            //         sketch.mouseY < gridCanvasSize - gridCanvasBorderSize
-            //     ) {
-            //         if (ballAdder) {
-            //             ballAdder(mouseXindex, mouseYindex, e);
-            //             return false;
-            //         }
-            //     } else {
-            //     }
-            // };
         };
     };
 

@@ -205,6 +205,7 @@ class Application extends _react2.default.Component {
         // this.play();
         const idsAndCallbacks = [{ id: '#grid-size-slider', onChange: this.newSize }, { id: '#note-length-slider', onChange: this.newNoteLength }];
         (0, _sliders.setSliderOnChange)(idsAndCallbacks);
+        (0, _animations.getAdderWithMousePosition)(this.addToGrid)();
     }
 
     render() {

@@ -10,10 +10,14 @@ import {
 } from './balls-logic';
 
 let stateDrawing;
+let mouseIsPressed;
 let previousTime;
 let mouseX = 1;
 let mouseY = 1;
+let mouseXstart = 1;
+let mouseYstart = 1;
 let cellSize = 1;
+let thisBallAdder = () => {};
 const sqrtThree = 1.7320508075688772935274463415059;
 const triangleSize = 320;
 const gridCanvasWidth = triangleSize*2.0;
@@ -31,12 +35,14 @@ const convertExWhyPixelToIndex = (x,y) => {
 //     min: 0,
 //     max: 255,
 // });
-export const getAdderWithMousePosition = (ballAdder) => (e) => {
-    if (mouseX > 0 + gridCanvasBorderSize &&
+const mouseIsInSketch = () => mouseX > 0 + gridCanvasBorderSize &&
         mouseX < gridCanvasWidth - gridCanvasBorderSize &&
         mouseY > 0 + gridCanvasBorderSize &&
         mouseY < gridCanvasHeight - gridCanvasBorderSize
-    ) {
+    ;
+export const getAdderWithMousePosition = (ballAdder) => (e) => {
+    thisBallAdder = ballAdder;
+    if (mouseIsInSketch()) {
         const mouseXYindex = convertExWhyPixelToIndex(mouseX, mouseY);
         ballAdder(mouseXYindex.x, mouseXYindex.y, e);
     } else {
@@ -47,11 +53,11 @@ export const setUpCanvas = (state) => {
     previousTime = new Date();
     const triangleDrawingArray = (topLeft, cellSize, sketch) => sketch.ellipse(
         topLeft.x + (cellSize / 2.0),
-        topLeft.y + (sqrtThree*cellSize / 4.0),
+        topLeft.y + (sqrtThree*cellSize/6),
         // cellSize*0.57735026918962,
         // cellSize*0.57735026918962
-        cellSize*0.4,
-        cellSize*0.4
+        cellSize*sqrtThree/3,
+        cellSize*sqrtThree/3
     );
     const triangleRotatingArray = [
 
@@ -106,6 +112,51 @@ export const setUpCanvas = (state) => {
             mouseY = sketch.mouseY;
             // draw background slash border
             sketch.background(255, 255, 255);
+            
+            mouseIsPressed = sketch.mouseIsPressed;
+            
+            const setMouseStart = (e) => {
+                mouseXstart=mouseX;
+                mouseYstart=mouseY;
+                
+                if(mouseIsInSketch()){
+                    thisBallAdder(mouseXindex, mouseYindex, e, true);
+                }
+            }
+            const setTouchStart = (e) => {
+                mouseXstart=mouseX;
+                mouseYstart=mouseY;
+                
+                if(mouseIsPressed && mouseIsInSketch()){
+                    thisBallAdder(mouseXindex, mouseYindex, e, true);
+                }
+            }
+            const sameAsStart = ()=>{
+                const {x:mouseXindex, y:mouseYindex} = convertExWhyPixelToIndex(mouseX,mouseY)
+                const {x:mouseXindexStart, y:mouseYindexStart} = convertExWhyPixelToIndex(mouseXstart,mouseYstart)
+                return mouseXindexStart === mouseXindex && mouseYindexStart === mouseYindex;
+            };
+            const setMouseEnd = (e) => {
+                mouseXstart=-1000;
+                mouseYstart=-1000;
+            }
+            
+            sketch.touchStarted = setTouchStart;
+            sketch.touchEnded = setMouseEnd;
+            sketch.mousePressed = setMouseStart;
+            sketch.mouseReleased = setMouseEnd;
+
+
+            const onDrag = (e) =>{
+                
+                if(mouseIsPressed && mouseIsInSketch() && !sameAsStart()){
+                    const {x:mouseXindex, y:mouseYindex} = convertExWhyPixelToIndex(mouseX,mouseY)
+                    thisBallAdder(mouseXindex, mouseYindex, e);
+                    e.preventDefault()
+                }
+            }
+            sketch.mouseDragged = onDrag;
+            sketch.touchMoved = onDrag;
             // draw grid
             cellSize = (gridCanvasWidth * 1.0) / (1.0 * gridSize);
             sketch.strokeWeight(0);
@@ -115,7 +166,7 @@ export const setUpCanvas = (state) => {
             sketch.push();
             sketch.stroke(45, 45, 45);
             sketch.strokeWeight(1);
-            for (var i=1; i<gridSize; i++) {
+            for (var i=.5; i<gridSize; i++) {
                 // horizontal
                 sketch.line(
                     1 + gridCanvasBorderSize + i * cellSize/2.0,
@@ -238,14 +289,18 @@ export const setUpCanvas = (state) => {
                 return undefined;
             });
             // wall Balls
-            (ballDictionary[BOUNDARY] || []).map((ball) => {
+            const flippedBalls = (ballDictionary[BOUNDARY] || []).map((ball) => {
                 sketch.push();
                 sketch.strokeWeight(0);
                 sketch.fill(255, 255, 255);
+                let flippedBall = flipBall(ball);
+                if(NO_BOUNDARY!==ballBoundaryKey(flippedBall,gridSize)){
+                    flippedBall = flipBall(flippedBall);
+                }
                 triangleDrawingArray(
                     timeShift(
                         convertBallToMiddle(ball),
-                        flipBall(ball).vector,
+                        flippedBall.vector,
                         percentage,
                         cellSize
                     ),
@@ -253,7 +308,7 @@ export const setUpCanvas = (state) => {
                     sketch
                 )
                 sketch.pop();
-                return undefined;
+                return flippedBall;
             });
             // rotating Balls
 
@@ -332,20 +387,7 @@ export const setUpCanvas = (state) => {
                 //     sketch
                 // );
             }
-            // eslint-disable-next-line no-param-reassign
-            // sketch.touchEnded = (e) => {
-            //     if (sketch.mouseX > 0 + gridCanvasBorderSize &&
-            //         sketch.mouseX < gridCanvasSize - gridCanvasBorderSize &&
-            //         sketch.mouseY > 0 + gridCanvasBorderSize &&
-            //         sketch.mouseY < gridCanvasSize - gridCanvasBorderSize
-            //     ) {
-            //         if (ballAdder) {
-            //             ballAdder(mouseXindex, mouseYindex, e);
-            //             return false;
-            //         }
-            //     } else {
-            //     }
-            // };
+
         };
     };
 
