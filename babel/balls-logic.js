@@ -82,7 +82,12 @@ const removeFromGrid = exports.removeFromGrid = function (grid, x, y) {
     return nextGrid;
 };
 
-const addToGrid = exports.addToGrid = function (grid, x, y, dir, speed) {
+const addToGrid = exports.addToGrid = function (grid, x, y, dir, number, speed, forced) {
+    if (grid.balls.length > 400 || !forced && grid.balls.filter(function (ball) {
+        return ball.x === x && ball.y === y && ball.vector === dir;
+    }).length) {
+        return grid;
+    }
     const nextGrid = _extends({}, grid, {
         id: chance.guid(),
         balls: [...grid.balls, {
@@ -92,6 +97,7 @@ const addToGrid = exports.addToGrid = function (grid, x, y, dir, speed) {
             speed
         }]
     });
+
     return nextGrid;
 };
 

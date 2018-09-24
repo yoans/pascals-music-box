@@ -51,7 +51,17 @@ export const removeFromGrid = (grid, x, y) => {
     return nextGrid;
 };
 
-export const addToGrid = (grid, x, y, dir, speed) => {
+export const addToGrid = (grid, x, y, dir, number, speed, forced) => {
+    if(
+        grid.balls.length>400 || 
+        (!forced &&
+            grid.balls.filter(
+                ball => ball.x === x && ball.y === y && ball.vector === dir
+            ).length
+        )
+    ){
+        return grid
+    }
     const nextGrid = {
         ...grid,
         id: chance.guid(),
@@ -65,6 +75,7 @@ export const addToGrid = (grid, x, y, dir, speed) => {
             },
         ],
     };
+    
     return nextGrid;
 };
 

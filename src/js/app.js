@@ -170,14 +170,14 @@ export class Application extends React.Component {
         console.log(encoded);
 
     }
-    addToGrid = (x, y, e) => {
+    addToGrid = (x, y, e, forced) => {
         if (e.shiftKey || this.state.deleting) {
             this.setState({
                 grid: removeFromGrid(this.state.grid, x, y)
             });
         } else {
             this.setState({
-                grid: addToGrid(this.state.grid, x, y, this.state.inputDirection, this.state.inputNumber, 1)
+                grid: addToGrid(this.state.grid, x, y, this.state.inputDirection, this.state.inputNumber, 1, forced)
             });
         }
     }
@@ -285,7 +285,6 @@ export class Application extends React.Component {
                                 id="sketch-holder"
                                 data-step="2"
                                 data-intro="Click on the grid to draw an Ball."
-                                onClick={getAdderWithMousePosition(this.addToGrid)}
                             />
                         </div>
                     </div>

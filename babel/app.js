@@ -154,14 +154,14 @@ class Application extends _react2.default.Component {
             console.log(encoded);
         };
 
-        this.addToGrid = function (x, y, e) {
+        this.addToGrid = function (x, y, e, forced) {
             if (e.shiftKey || _this.state.deleting) {
                 _this.setState({
                     grid: (0, _ballsLogic.removeFromGrid)(_this.state.grid, x, y)
                 });
             } else {
                 _this.setState({
-                    grid: (0, _ballsLogic.addToGrid)(_this.state.grid, x, y, _this.state.inputDirection, _this.state.inputNumber, 1)
+                    grid: (0, _ballsLogic.addToGrid)(_this.state.grid, x, y, _this.state.inputDirection, _this.state.inputNumber, 1, forced)
                 });
             }
         };
@@ -319,8 +319,7 @@ class Application extends _react2.default.Component {
                         _react2.default.createElement('div', {
                             id: 'sketch-holder',
                             'data-step': '2',
-                            'data-intro': 'Click on the grid to draw an Ball.',
-                            onClick: (0, _animations.getAdderWithMousePosition)(this.addToGrid)
+                            'data-intro': 'Click on the grid to draw an Ball.'
                         })
                     )
                 )

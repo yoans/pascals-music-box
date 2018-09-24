@@ -92,24 +92,24 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
             mouseX = sketch.mouseX;
             mouseY = sketch.mouseY;
             // draw background slash border
-            sketch.background(255, 255, 255);
+            // sketch.background(255, 255, 255);
 
             mouseIsPressed = sketch.mouseIsPressed;
 
             const setMouseStart = function (e) {
                 mouseXstart = mouseX;
                 mouseYstart = mouseY;
-
+                const { x: mouseXindexStart, y: mouseYindexStart } = convertExWhyPixelToIndex(mouseXstart, mouseYstart);
                 if (mouseIsInSketch()) {
-                    thisBallAdder(mouseXindex, mouseYindex, e, true);
+                    thisBallAdder(mouseXindexStart, mouseYindexStart, e, true);
                 }
             };
             const setTouchStart = function (e) {
                 mouseXstart = mouseX;
                 mouseYstart = mouseY;
-
+                const { x: mouseXindexStart, y: mouseYindexStart } = convertExWhyPixelToIndex(mouseXstart, mouseYstart);
                 if (mouseIsPressed && mouseIsInSketch()) {
-                    thisBallAdder(mouseXindex, mouseYindex, e, true);
+                    thisBallAdder(mouseXindexStart, mouseYindexStart, e, true);
                 }
             };
             const sameAsStart = function () {
