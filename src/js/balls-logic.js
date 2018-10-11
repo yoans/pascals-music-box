@@ -16,12 +16,12 @@ const vectors = [
 ];
 const vectorNumber = vectors.length;
 const vectorOperations = [
-    ({ x, y, vector, speed}) => ({ x: x + speed, y: y - speed, vector, speed }),
-    ({ x, y, vector, speed}) => ({ x: x + speed, y, vector, speed }),
-    ({ x, y, vector, speed}) => ({ x, y: y + speed, vector, speed }),
-    ({ x, y, vector, speed}) => ({ x: x - speed, y: y + speed, vector, speed }),
-    ({ x, y, vector, speed}) => ({ x: x - speed, y, vector, speed }),
-    ({ x, y, vector, speed}) => ({ x, y: y - speed, vector, speed }),
+    ({ x, y, vector, speed}) => ({ x: x + (1.0/speed), y: y - (1.0/speed), vector, speed }),
+    ({ x, y, vector, speed}) => ({ x: x + (1.0/speed), y, vector, speed }),
+    ({ x, y, vector, speed}) => ({ x, y: y + (1.0/speed), vector, speed }),
+    ({ x, y, vector, speed}) => ({ x: x - (1.0/speed), y: y + 1/speed, vector, speed }),
+    ({ x, y, vector, speed}) => ({ x: x - (1.0/speed), y, vector, speed }),
+    ({ x, y, vector, speed}) => ({ x, y: y - (1.0/speed), vector, speed }),
 ];
 const getVector = () => chance.natural({
     min: 0,
@@ -100,13 +100,15 @@ const checkVectors = (vector,first,second) => R.or(vector===first,vector===secon
 export const boundaryKey = (ball, size, rotations = 0) => {
     const effectiveVector = (ball.vector + rotations) % vectorNumber;
     const checkEffectiveVectors = (first,second) => checkVectors(effectiveVector,first,second);
-    if (ball.y === 0 && checkEffectiveVectors(5,0)) {
+    const xPlusY = (ball.x + ball.y);
+    const maxSize = (size - 1);
+    if (ball.y.toFixed(2) == 0.00 && checkEffectiveVectors(5,0)) {
         return 'y';
     }
-    if (ball.x + ball.y === size - 1 && checkEffectiveVectors(1,2)) {
+    if (xPlusY.toFixed(2) == maxSize.toFixed(2) && checkEffectiveVectors(1,2)) {
         return 'xy';
     }
-    if (ball.x === 0 && checkEffectiveVectors(3,4)) {
+    if (ball.x.toFixed(2) == 0.00 && checkEffectiveVectors(3,4)) {
         return 'x';
     }
     return NO_BOUNDARY;

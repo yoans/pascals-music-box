@@ -29,17 +29,17 @@ const BOUNDARY = exports.BOUNDARY = 'boundary';
 const vectors = ['ball-up-right', 'ball-right', 'ball-down-right', 'ball-down-left', 'ball-left', 'ball-up-left'];
 const vectorNumber = vectors.length;
 const vectorOperations = [function ({ x, y, vector, speed }) {
-    return { x: x + speed, y: y - speed, vector, speed };
+    return { x: x + 1.0 / speed, y: y - 1.0 / speed, vector, speed };
 }, function ({ x, y, vector, speed }) {
-    return { x: x + speed, y, vector, speed };
+    return { x: x + 1.0 / speed, y, vector, speed };
 }, function ({ x, y, vector, speed }) {
-    return { x, y: y + speed, vector, speed };
+    return { x, y: y + 1.0 / speed, vector, speed };
 }, function ({ x, y, vector, speed }) {
-    return { x: x - speed, y: y + speed, vector, speed };
+    return { x: x - 1.0 / speed, y: y + 1 / speed, vector, speed };
 }, function ({ x, y, vector, speed }) {
-    return { x: x - speed, y, vector, speed };
+    return { x: x - 1.0 / speed, y, vector, speed };
 }, function ({ x, y, vector, speed }) {
-    return { x, y: y - speed, vector, speed };
+    return { x, y: y - 1.0 / speed, vector, speed };
 }];
 const getVector = function () {
     return chance.natural({
@@ -132,13 +132,15 @@ const boundaryKey = exports.boundaryKey = function (ball, size, rotations = 0) {
     const checkEffectiveVectors = function (first, second) {
         return checkVectors(effectiveVector, first, second);
     };
-    if (ball.y === 0 && checkEffectiveVectors(5, 0)) {
+    const xPlusY = ball.x + ball.y;
+    const maxSize = size - 1;
+    if (ball.y.toFixed(2) == 0.00 && checkEffectiveVectors(5, 0)) {
         return 'y';
     }
-    if (ball.x + ball.y === size - 1 && checkEffectiveVectors(1, 2)) {
+    if (xPlusY.toFixed(2) == maxSize.toFixed(2) && checkEffectiveVectors(1, 2)) {
         return 'xy';
     }
-    if (ball.x === 0 && checkEffectiveVectors(3, 4)) {
+    if (ball.x.toFixed(2) == 0.00 && checkEffectiveVectors(3, 4)) {
         return 'x';
     }
     return NO_BOUNDARY;

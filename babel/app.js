@@ -33,6 +33,8 @@ var _presets = require('./presets');
 
 var _presets2 = _interopRequireDefault(_presets);
 
+var _plusButton = require('./buttons/plus-button');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const chance = new Chance();
@@ -161,7 +163,7 @@ class Application extends _react2.default.Component {
                 });
             } else {
                 _this.setState({
-                    grid: (0, _ballsLogic.addToGrid)(_this.state.grid, x, y, _this.state.inputDirection, _this.state.inputNumber, 1, forced)
+                    grid: (0, _ballsLogic.addToGrid)(_this.state.grid, x, y, _this.state.inputDirection, _this.state.inputNumber, _this.state.speed, forced)
                 });
             }
         };
@@ -196,7 +198,8 @@ class Application extends _react2.default.Component {
             verticalSymmetry: false,
             backwardDiagonalSymmetry: false,
             forwardDiagonalSymmetry: false,
-            inputNumber: 1
+            inputNumber: 1,
+            speed: 1
         };
         (0, _animations.setUpCanvas)(this.state);
     }
@@ -413,20 +416,12 @@ class Application extends _react2.default.Component {
                 _react2.default.createElement(
                     'div',
                     { className: 'edit-options-member' },
-                    _react2.default.createElement(_reactPlayerControls.PrevButton, {
+                    _react2.default.createElement(_plusButton.PlusButton, {
                         onClick: function () {
-                            let NextPreset = _this2.state.currentPreset - 1;
-
-                            if (NextPreset < 0) {
-                                NextPreset = _this2.state.presets.length - 1;
-                            }
-
                             _this2.setState({
-                                grid: _this2.state.presets[NextPreset],
-                                currentPreset: NextPreset
+                                speed: _this2.state.speed + 1
                             });
-                        },
-                        isEnabled: true
+                        }
                     })
                 ),
                 _react2.default.createElement(

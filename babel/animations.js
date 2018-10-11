@@ -40,8 +40,9 @@ const convertExWhyPixelToIndex = function (x, y) {
 //     max: 255,
 // });
 const mouseIsInSketch = function () {
-    return mouseX > 0 + gridCanvasBorderSize && mouseX < gridCanvasWidth - gridCanvasBorderSize && mouseY > 0 + gridCanvasBorderSize && mouseY < gridCanvasHeight - gridCanvasBorderSize;
+    return mouseX - mouseY / sqrtThree > 0 + gridCanvasBorderSize && mouseX < gridCanvasWidth - gridCanvasBorderSize - mouseY / sqrtThree && mouseY > 0 + gridCanvasBorderSize;
 };
+
 const getAdderWithMousePosition = exports.getAdderWithMousePosition = function (ballAdder) {
     return function (e) {
         thisBallAdder = ballAdder;
@@ -76,8 +77,8 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
         sketch.angleMode(sketch.DEGREES);
         sketch.rotate(90 * vector);
     };
-    const timeShift = function ({ x, y }, vector, percentage, cellSize) {
-        const shifted = [{ x: x + percentage * cellSize / 2.0, y: y - percentage * cellSize * sqrtThree / 2.0 }, { x: x + percentage * cellSize, y }, { x: x + percentage * cellSize / 2.0, y: y + percentage * cellSize * sqrtThree / 2.0 }, { x: x - percentage * cellSize / 2.0, y: y + percentage * cellSize * sqrtThree / 2.0 }, { x: x - percentage * cellSize, y }, { x: x - percentage * cellSize / 2.0, y: y - percentage * cellSize * sqrtThree / 2.0 }];
+    const timeShift = function ({ x, y }, vector, percentage, cellSize, speed) {
+        const shifted = [{ x: x + percentage * cellSize / 2.0 / speed, y: y - percentage * cellSize * sqrtThree / 2.0 / speed }, { x: x + percentage * cellSize / speed, y }, { x: x + percentage * cellSize / 2.0 / speed, y: y + percentage * cellSize * sqrtThree / 2.0 / speed }, { x: x - percentage * cellSize / 2.0 / speed, y: y + percentage * cellSize * sqrtThree / 2.0 / speed }, { x: x - percentage * cellSize / speed, y }, { x: x - percentage * cellSize / 2.0 / speed, y: y - percentage * cellSize * sqrtThree / 2.0 / speed }];
         return shifted[vector];
     };
 
@@ -221,7 +222,7 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
             // non-wall Balls
             const ballDictionary = (0, _ballsLogic.getBallBoundaryDictionary)(ballsToNotRotateDictionary, gridSize, _ballsLogic.ballBoundaryKey);
             (ballDictionary[_ballsLogic.NO_BOUNDARY] || []).map(function (ball) {
-                const shiftedTopLeft = timeShift(convertBallToMiddle(ball), ball.vector, percentage, cellSize);
+                const shiftedTopLeft = timeShift(convertBallToMiddle(ball), ball.vector, percentage, cellSize, ball.speed);
                 // const triangleDrawer = triangleDrawingArray[ball.vector];
                 triangleDrawingArray(shiftedTopLeft, cellSize, sketch);
                 return undefined;
@@ -235,7 +236,7 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
                 if (_ballsLogic.NO_BOUNDARY !== (0, _ballsLogic.ballBoundaryKey)(flippedBall, gridSize)) {
                     flippedBall = (0, _ballsLogic.flipBall)(flippedBall);
                 }
-                triangleDrawingArray(timeShift(convertBallToMiddle(ball), flippedBall.vector, percentage, cellSize), cellSize, sketch);
+                triangleDrawingArray(timeShift(convertBallToMiddle(ball), flippedBall.vector, percentage, cellSize, ball.speed), cellSize, sketch);
                 sketch.pop();
                 return flippedBall;
             });
@@ -300,21 +301,11 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
             // });
 
             // draw hover input
-            sketch.cursor(sketch.CROSS);
-            const mouseXindex = convertExWhyPixelToIndex(sketch.mouseX);
-            const mouseYindex = convertExWhyPixelToIndex(sketch.mouseY);
-            if (!stateDrawing.deleting) {
-                sketch.cursor(sketch.HAND);
-                // triangleDrawingArray[stateDrawing.inputDirection](
-                //     convertBallToTopLeft(
-                //         {
-                //             x: mouseXindex,
-                //             y: mouseYindex
-                //         }
-                //     ),
-                //     cellSize,
-                //     sketch
-                // );
+            if (mouseIsInSketch()) {
+                sketch.cursor(sketch.CROSS);
+                if (!stateDrawing.deleting) {
+                    sketch.cursor(sketch.HAND);
+                }
             }
         };
     };

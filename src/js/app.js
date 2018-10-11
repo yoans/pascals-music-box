@@ -33,6 +33,7 @@ import {
 } from './buttons/icons';
 import {setSliderOnChange} from './sliders';
 import presets from './presets';
+import { PlusButton } from './buttons/plus-button';
 
 const chance = new Chance();
 const maxSize = 20;
@@ -69,7 +70,8 @@ export class Application extends React.Component {
             verticalSymmetry: false,
             backwardDiagonalSymmetry: false,
             forwardDiagonalSymmetry: false,
-            inputNumber: 1
+            inputNumber: 1,
+            speed:1
         };
         setUpCanvas(this.state);
     }
@@ -177,7 +179,7 @@ export class Application extends React.Component {
             });
         } else {
             this.setState({
-                grid: addToGrid(this.state.grid, x, y, this.state.inputDirection, this.state.inputNumber, 1, forced)
+                grid: addToGrid(this.state.grid, x, y, this.state.inputDirection, this.state.inputNumber, this.state.speed, forced)
             });
         }
     }
@@ -377,20 +379,12 @@ export class Application extends React.Component {
                     
                     <div className="edit-options-member">
 
-                        <PrevButton
+                        <PlusButton
                             onClick={()=>{
-                                let NextPreset = this.state.currentPreset - 1;
-                                
-                                if (NextPreset<0) {
-                                    NextPreset = this.state.presets.length -1;
-                                }
- 
                                 this.setState({
-                                    grid: this.state.presets[NextPreset],
-                                    currentPreset: NextPreset
+                                    speed: this.state.speed+1
                                 });
                             }}
-                            isEnabled={true}
                         />
                     </div> 
                     <div

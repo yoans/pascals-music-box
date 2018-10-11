@@ -35,11 +35,14 @@ const convertExWhyPixelToIndex = (x,y) => {
 //     min: 0,
 //     max: 255,
 // });
-const mouseIsInSketch = () => mouseX > 0 + gridCanvasBorderSize &&
-        mouseX < gridCanvasWidth - gridCanvasBorderSize &&
-        mouseY > 0 + gridCanvasBorderSize &&
-        mouseY < gridCanvasHeight - gridCanvasBorderSize
-    ;
+const mouseIsInSketch = () => (
+    mouseX-mouseY/sqrtThree > 0 + gridCanvasBorderSize
+    &&
+    mouseX < gridCanvasWidth - gridCanvasBorderSize - mouseY/sqrtThree
+    &&
+    mouseY > 0 + gridCanvasBorderSize
+);
+
 export const getAdderWithMousePosition = (ballAdder) => (e) => {
     thisBallAdder = ballAdder;
     if (mouseIsInSketch()) {
@@ -88,14 +91,14 @@ export const setUpCanvas = (state) => {
         sketch.angleMode(sketch.DEGREES);
         sketch.rotate(90 * vector);
     };
-    const timeShift = ({ x, y }, vector, percentage, cellSize) => {
+    const timeShift = ({ x, y }, vector, percentage, cellSize, speed) => {
         const shifted = [
-            { x: x + percentage*cellSize/2.0, y: y - percentage*cellSize * sqrtThree / 2.0 },
-            { x: x + percentage*cellSize, y },
-            { x: x + percentage*cellSize/2.0, y: y + percentage*cellSize * sqrtThree / 2.0 },
-            { x: x - percentage*cellSize/2.0, y: y + percentage*cellSize * sqrtThree / 2.0 },
-            { x: x - percentage*cellSize, y },
-            { x: x - percentage*cellSize/2.0, y: y - percentage*cellSize * sqrtThree / 2.0 },
+            { x: x + percentage*cellSize/2.0 / speed, y: y - percentage*cellSize * sqrtThree / 2.0 / speed},
+            { x: x + percentage*cellSize / speed, y },
+            { x: x + percentage*cellSize/2.0 / speed, y: y + percentage*cellSize * sqrtThree / 2.0 / speed},
+            { x: x - percentage*cellSize/2.0 / speed, y: y + percentage*cellSize * sqrtThree / 2.0 / speed},
+            { x: x - percentage*cellSize / speed, y },
+            { x: x - percentage*cellSize/2.0 / speed, y: y - percentage*cellSize * sqrtThree / 2.0 / speed},
         ];
         return shifted[vector];
     };
@@ -282,7 +285,8 @@ export const setUpCanvas = (state) => {
                     convertBallToMiddle(ball),
                     ball.vector,
                     percentage,
-                    cellSize
+                    cellSize,
+                    ball.speed
                 );
                 // const triangleDrawer = triangleDrawingArray[ball.vector];
                 triangleDrawingArray(shiftedTopLeft, cellSize, sketch);
@@ -302,7 +306,8 @@ export const setUpCanvas = (state) => {
                         convertBallToMiddle(ball),
                         flippedBall.vector,
                         percentage,
-                        cellSize
+                        cellSize,
+                        ball.speed
                     ),
                     cellSize,
                     sketch
@@ -371,21 +376,11 @@ export const setUpCanvas = (state) => {
             // });
 
             // draw hover input
-            sketch.cursor(sketch.CROSS);
-            const mouseXindex = convertExWhyPixelToIndex(sketch.mouseX);
-            const mouseYindex = convertExWhyPixelToIndex(sketch.mouseY);
-            if (!stateDrawing.deleting) {
-                sketch.cursor(sketch.HAND);
-                // triangleDrawingArray[stateDrawing.inputDirection](
-                //     convertBallToTopLeft(
-                //         {
-                //             x: mouseXindex,
-                //             y: mouseYindex
-                //         }
-                //     ),
-                //     cellSize,
-                //     sketch
-                // );
+            if (mouseIsInSketch()){
+                sketch.cursor(sketch.CROSS);
+                if (!stateDrawing.deleting ) {
+                    sketch.cursor(sketch.HAND);
+                }
             }
 
         };
