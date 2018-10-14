@@ -264,8 +264,8 @@ export const setUpCanvas = (state) => {
             // non-rotated balls
             const ballsToNotRotateDictionary = Object.keys(ballLocationDictionary).reduce(
                 (acc, location) => (
-                    // ballLocationDictionary[location].length === 1 ?
-                     1 ?
+                     ballLocationDictionary[location].length === 1 ||
+                     !stateDrawing.collisionsOn ?
                         [
                             ...acc,
                             ...ballLocationDictionary[location],
@@ -317,51 +317,58 @@ export const setUpCanvas = (state) => {
             });
             // rotating Balls
 
-            // const ballsToRotateDictionary = Object.keys(ballLocationDictionary).reduce(
-            //     (acc, location) => (
-            //         ballLocationDictionary[location].length !== 1 ?
-            //             {
-            //                 ...acc,
-            //                 [location]: ballLocationDictionary[location],
-            //             } :
-            //             acc
-            //     ),
-            //     {}
-            // );
-            // Object.keys(ballsToRotateDictionary).map((ballsToRotateIndex) => {
-            //     const rotations = (
-            //         (
-            //             ballsToRotateDictionary[ballsToRotateIndex].length % 4
-            //         ) || 4
-            //     ) - 1;
-            //     const bouncedRotation = (rotations + 2) % 4;
-            //     // draw not bounced
-            //     const bouncingDictionary = getBallBoundaryDictionary(
-            //         ballsToRotateDictionary[ballsToRotateIndex],
-            //         stateDrawing.grid.size,
-            //         ballBoundaryKey,
-            //         rotations
-            //     );
-            //     const ballsNotBouncing = bouncingDictionary[NO_BOUNDARY] || [];
-            //     ballsNotBouncing.map((ball) => {
-            //         const topLeft = convertBallToTopLeft(ball);
+            const ballsToRotateDictionary = Object.keys(ballLocationDictionary).reduce(
+                (acc, location) => (
+                    ballLocationDictionary[location].length !== 1 && stateDrawing.collisionsOn ?
+                        {
+                            ...acc,
+                            [location]: ballLocationDictionary[location],
+                        } :
+                        acc
+                ),
+                {}
+            );
+            Object.keys(ballsToRotateDictionary).map((ballsToRotateIndex) => {
+                const rotations = (
+                    (
+                        ballsToRotateDictionary[ballsToRotateIndex].length % 6
+                    ) || 6
+                ) - 1;
+                const bouncedRotation = (rotations + 3) % 6;
+                // draw not bounced
+                const bouncingDictionary = getBallBoundaryDictionary(
+                    ballsToRotateDictionary[ballsToRotateIndex],
+                    stateDrawing.grid.size,
+                    ballBoundaryKey,
+                    rotations
+                );
+                const ballsNotBouncing = bouncingDictionary[NO_BOUNDARY] || [];
+                ballsNotBouncing.map((ball) => {
                     
-            //         sketch.push();
-            //         sketch.strokeWeight(0);
-            //         sketch.fill(255, 255, 255);
-            //         translateAndRotate(topLeft, sketch, ball.vector, cellSize);
+                    sketch.push();
+                    sketch.strokeWeight(0);
+                    sketch.fill(255, 255, 255);
                     
-            //         triangleRotatingArray[rotations](cellSize, sketch, percentage);
-                    
-            //         sketch.pop();
-            //         return undefined;
-            //     });
+                    triangleDrawingArray(
+                        timeShift(
+                            convertBallToMiddle(ball),
+                            (ball.vector + rotations) % 6,
+                            percentage,
+                            cellSize,
+                            ball.speed
+                        ),
+                        cellSize,
+                        sketch
+                    )
+                    sketch.pop();
+                    return undefined;
+                });
                 
             //     const ballsBouncing = bouncingDictionary[BOUNDARY] || [];
 
             //     // bounced
             //     ballsBouncing.map((ball) => {
-            //         const topLeft = convertBallToTopLeft(ball);
+            //         const topLeft = convertBallToMiddle(ball);
 
             //         sketch.push();
             //         sketch.strokeWeight(0);
@@ -373,7 +380,7 @@ export const setUpCanvas = (state) => {
             //         return undefined;
             //     });
             //     return undefined;
-            // });
+            });
 
             // draw hover input
             if (mouseIsInSketch()){
