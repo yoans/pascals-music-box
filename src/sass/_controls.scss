@@ -147,6 +147,24 @@ $color-active: fade-out($color-hover, 0.5);
     -webkit-animation: rightRotation .2s ease-out;
     transform: rotate(0deg);
   } 
+  .Middle-Right {
+    transform: rotate(0deg);
+  } 
+  .Down-Right {
+    transform: rotate(60deg);
+  } 
+  .Down-Left {
+    transform: rotate(120deg);
+  } 
+  .Middle-Left {
+    transform: rotate(180deg);
+  } 
+  .Up-Left {
+    transform: rotate(240deg);
+  } 
+  .Up-Right {
+    transform: rotate(300deg);
+  } 
   &.isEnabled {
     cursor: pointer;
     &.TutorialButtonStartGreen {

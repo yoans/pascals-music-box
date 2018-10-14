@@ -22,18 +22,21 @@ import {
 } from './animations';
 import {TrashButton} from './buttons/trash-button';
 import {EditButton} from './buttons/edit-button';
-import {ArrowButton} from './buttons/arrow-button';
+import {BallButton} from './buttons/ball-button';
 import {
     LargeGridIcon,
     SmallGridIcon,
     RabbitIcon,
     TurtleIcon,
     InfoIcon,
-    ShareIcon
+    ShareIcon,
+    CollisionIcon
 } from './buttons/icons';
 import {setSliderOnChange} from './sliders';
 import presets from './presets';
 import { PlusButton } from './buttons/plus-button';
+import { MinusButton } from './buttons/minus-button';
+
 
 const chance = new Chance();
 const maxSize = 20;
@@ -138,7 +141,7 @@ export class Application extends React.Component {
                 ...this.state.grid,
                 id: chance.guid(),
                 muted: this.state.muted 
-            }, length),
+            }, length, this.state.collisionsOn),
         });
     }
     newInputDirection = (inputDirection) => {
@@ -216,7 +219,7 @@ export class Application extends React.Component {
                     className="edit-options"
                 >
                 
-                <div className="edit-options-member">
+                    {/* <div className="edit-options-member">
                         <div className="">
                             <button
                                 className={"TutorialButton isEnabled " + this.state.tut} 
@@ -233,7 +236,7 @@ export class Application extends React.Component {
                                 <InfoIcon/>
                             </button> 
                         </div>
-                    </div>
+                    </div> */}
                     <div
                         className="edit-options-member"
                     >
@@ -302,37 +305,56 @@ export class Application extends React.Component {
                     {
                         [
                             (
-                                <ArrowButton
+                                <BallButton
                                     number={this.state.inputNumber}
                                     onClick={
                                         () => this.newInputDirection(1)
                                     } 
-                                    direction="Up"
+                                    direction="Up-Right"
                                 />),
                             (
-                                <ArrowButton
+                                <BallButton
                                     number={this.state.inputNumber}
                                     onClick={
                                         () => this.newInputDirection(2)
                                     }
-                                    direction="Right"
+                                    direction="Middle-Right"
                                 />),
                             (
-                                <ArrowButton
+                                <BallButton
                                     number={this.state.inputNumber}
                                     onClick={
                                         () => this.newInputDirection(3)
                                     }
-                                    direction="Down"
+                                    direction="Down-Right"
                                 />),
-                            (
-                                <ArrowButton
-                                    number={this.state.inputNumber}
-                                    onClick={
-                                        () => this.newInputDirection(0)
-                                    }
-                                    direction="Left"
-                                />),
+                                (
+                                    <BallButton
+                                        number={this.state.inputNumber}
+                                        onClick={
+                                            () => this.newInputDirection(4)
+                                        }
+                                        direction="Down-Left"
+                                    />
+                                ),
+                                (
+                                    <BallButton
+                                        number={this.state.inputNumber}
+                                        onClick={
+                                            () => this.newInputDirection(5)
+                                        }
+                                        direction="Middle-Left"
+                                    />
+                                ),
+                                (
+                                    <BallButton
+                                        number={this.state.inputNumber}
+                                        onClick={
+                                            () => this.newInputDirection(0)
+                                        }
+                                        direction="Up-Left"
+                                    />
+                                ),
                         ][this.state.inputDirection]
                     }</div>
                     <div
@@ -379,11 +401,30 @@ export class Application extends React.Component {
                     
                     <div className="edit-options-member">
 
+                        <MinusButton
+                            onClick={()=>{
+                                const newSpeed = this.state.speed+1;
+                                if(newSpeed <= 6){
+                                    this.setState({
+                                        speed: newSpeed
+                                    });
+                                }
+                            }}
+                        />
+                    </div> 
+                    <div className="edit-options-member">
+                        <h1 className="edit-options-member-h1">{(720/this.state.speed).toFixed(0)}</h1>
+                    </div>
+                    <div className="edit-options-member">
+
                         <PlusButton
                             onClick={()=>{
-                                this.setState({
-                                    speed: this.state.speed+1
-                                });
+                                const newSpeed = this.state.speed-1;
+                                if(newSpeed >= 1){
+                                    this.setState({
+                                        speed: newSpeed
+                                    });
+                                }
                             }}
                         />
                     </div> 
@@ -413,7 +454,7 @@ export class Application extends React.Component {
                         data-step="4"
                         data-intro="Press this to see other examples."
                     >
-                        <NextButton
+                        {/* <NextButton
                             onClick={()=>{
                                 let NextPreset = this.state.currentPreset + 1;
                                 
@@ -427,20 +468,29 @@ export class Application extends React.Component {
                                 });
                             }}
                             isEnabled={true}
-                        />
+                        /> */}
                     </div>
                 </div>
                 
                 <div className="edit-options">
                     <div
                         className="edit-options-member"
-                        data-step="9"
-                        data-intro="Trash the whole thing."
                     >
                         <TrashButton onClick={this.emptyGrid}/>
                     </div>
-                    <div className= "spacer-div-next-to-trash"/>
                     <div
+                        className="edit-options-member"
+                    >
+                        <input type="checkbox" value={this.state.collisionsOn} onChange={()=>{
+                                    this.setState({
+                                        collisionsOn: !this.state.collisionsOn
+                                    });
+                                }}
+                         />
+                    </div>
+                    
+                    {/* <div className= "spacer-div-next-to-trash"/> */}
+                    {/* <div
                         className="edit-options-member"
                         data-step="16"
                         data-intro="Share your creation on Facebook!"
@@ -451,7 +501,7 @@ export class Application extends React.Component {
                         >
                             <ShareIcon/>
                         </button> 
-                    </div>
+                    </div> */}
                 </div>
                 <select id="midiOut" className="ball-input">
                     <option value="">Not connected</option>

@@ -251,6 +251,90 @@
   .ShareButton .Right {
     -webkit-animation: rightRotation .2s ease-out;
     transform: rotate(0deg); }
+  .PlusButton .Middle-Right,
+  .PlayButton .Middle-Right,
+  .PauseButton .Middle-Right,
+  .PrevButton .Middle-Right,
+  .NextButton .Middle-Right,
+  .SoundOnButton .Middle-Right,
+  .SoundOffButton .Middle-Right,
+  .TrashButton .Middle-Right,
+  .EditButton .Middle-Right,
+  .EraseButton .Middle-Right,
+  .ArrowButton .Middle-Right,
+  .TutorialButton .Middle-Right,
+  .ShareButton .Middle-Right {
+    transform: rotate(0deg); }
+  .PlusButton .Down-Right,
+  .PlayButton .Down-Right,
+  .PauseButton .Down-Right,
+  .PrevButton .Down-Right,
+  .NextButton .Down-Right,
+  .SoundOnButton .Down-Right,
+  .SoundOffButton .Down-Right,
+  .TrashButton .Down-Right,
+  .EditButton .Down-Right,
+  .EraseButton .Down-Right,
+  .ArrowButton .Down-Right,
+  .TutorialButton .Down-Right,
+  .ShareButton .Down-Right {
+    transform: rotate(60deg); }
+  .PlusButton .Down-Left,
+  .PlayButton .Down-Left,
+  .PauseButton .Down-Left,
+  .PrevButton .Down-Left,
+  .NextButton .Down-Left,
+  .SoundOnButton .Down-Left,
+  .SoundOffButton .Down-Left,
+  .TrashButton .Down-Left,
+  .EditButton .Down-Left,
+  .EraseButton .Down-Left,
+  .ArrowButton .Down-Left,
+  .TutorialButton .Down-Left,
+  .ShareButton .Down-Left {
+    transform: rotate(120deg); }
+  .PlusButton .Middle-Left,
+  .PlayButton .Middle-Left,
+  .PauseButton .Middle-Left,
+  .PrevButton .Middle-Left,
+  .NextButton .Middle-Left,
+  .SoundOnButton .Middle-Left,
+  .SoundOffButton .Middle-Left,
+  .TrashButton .Middle-Left,
+  .EditButton .Middle-Left,
+  .EraseButton .Middle-Left,
+  .ArrowButton .Middle-Left,
+  .TutorialButton .Middle-Left,
+  .ShareButton .Middle-Left {
+    transform: rotate(180deg); }
+  .PlusButton .Up-Left,
+  .PlayButton .Up-Left,
+  .PauseButton .Up-Left,
+  .PrevButton .Up-Left,
+  .NextButton .Up-Left,
+  .SoundOnButton .Up-Left,
+  .SoundOffButton .Up-Left,
+  .TrashButton .Up-Left,
+  .EditButton .Up-Left,
+  .EraseButton .Up-Left,
+  .ArrowButton .Up-Left,
+  .TutorialButton .Up-Left,
+  .ShareButton .Up-Left {
+    transform: rotate(240deg); }
+  .PlusButton .Up-Right,
+  .PlayButton .Up-Right,
+  .PauseButton .Up-Right,
+  .PrevButton .Up-Right,
+  .NextButton .Up-Right,
+  .SoundOnButton .Up-Right,
+  .SoundOffButton .Up-Right,
+  .TrashButton .Up-Right,
+  .EditButton .Up-Right,
+  .EraseButton .Up-Right,
+  .ArrowButton .Up-Right,
+  .TutorialButton .Up-Right,
+  .ShareButton .Up-Right {
+    transform: rotate(300deg); }
   .PlusButton.isEnabled,
   .PlayButton.isEnabled,
   .PauseButton.isEnabled,
@@ -606,6 +690,9 @@ select {
 .edit-options-member {
   display: inline-block;
   vertical-align: top; }
+
+.edit-options-member-h1 {
+  color: white; }
 
 .edit-options-button {
   width: 75px;

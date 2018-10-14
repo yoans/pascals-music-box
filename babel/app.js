@@ -23,7 +23,7 @@ var _trashButton = require('./buttons/trash-button');
 
 var _editButton = require('./buttons/edit-button');
 
-var _arrowButton = require('./buttons/arrow-button');
+var _ballButton = require('./buttons/ball-button');
 
 var _icons = require('./buttons/icons');
 
@@ -34,6 +34,8 @@ var _presets = require('./presets');
 var _presets2 = _interopRequireDefault(_presets);
 
 var _plusButton = require('./buttons/plus-button');
+
+var _minusButton = require('./buttons/minus-button');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -119,7 +121,7 @@ class Application extends _react2.default.Component {
                 grid: (0, _ballsLogic.nextGrid)(_extends({}, _this.state.grid, {
                     id: chance.guid(),
                     muted: _this.state.muted
-                }), length)
+                }), length, _this.state.collisionsOn)
             });
         };
 
@@ -239,25 +241,6 @@ class Application extends _react2.default.Component {
                 },
                 _react2.default.createElement(
                     'div',
-                    { className: 'edit-options-member' },
-                    _react2.default.createElement(
-                        'div',
-                        { className: '' },
-                        _react2.default.createElement(
-                            'button',
-                            {
-                                className: "TutorialButton isEnabled " + this.state.tut,
-                                onClick: function () {
-                                    _this2.removeTutHighlight();
-                                    introJs().setOption('hideNext', true).setOption('hidePrev', true).setOption('showStepNumbers', false).setOption('exitOnOverlayClick', false).start();
-                                }
-                            },
-                            _react2.default.createElement(_icons.InfoIcon, null)
-                        )
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
                     {
                         className: 'edit-options-member'
                     },
@@ -339,30 +322,42 @@ class Application extends _react2.default.Component {
                         'data-step': '11',
                         'data-intro': 'Change the ball direction.'
                     },
-                    [_react2.default.createElement(_arrowButton.ArrowButton, {
+                    [_react2.default.createElement(_ballButton.BallButton, {
                         number: this.state.inputNumber,
                         onClick: function () {
                             return _this2.newInputDirection(1);
                         },
-                        direction: 'Up'
-                    }), _react2.default.createElement(_arrowButton.ArrowButton, {
+                        direction: 'Up-Right'
+                    }), _react2.default.createElement(_ballButton.BallButton, {
                         number: this.state.inputNumber,
                         onClick: function () {
                             return _this2.newInputDirection(2);
                         },
-                        direction: 'Right'
-                    }), _react2.default.createElement(_arrowButton.ArrowButton, {
+                        direction: 'Middle-Right'
+                    }), _react2.default.createElement(_ballButton.BallButton, {
                         number: this.state.inputNumber,
                         onClick: function () {
                             return _this2.newInputDirection(3);
                         },
-                        direction: 'Down'
-                    }), _react2.default.createElement(_arrowButton.ArrowButton, {
+                        direction: 'Down-Right'
+                    }), _react2.default.createElement(_ballButton.BallButton, {
+                        number: this.state.inputNumber,
+                        onClick: function () {
+                            return _this2.newInputDirection(4);
+                        },
+                        direction: 'Down-Left'
+                    }), _react2.default.createElement(_ballButton.BallButton, {
+                        number: this.state.inputNumber,
+                        onClick: function () {
+                            return _this2.newInputDirection(5);
+                        },
+                        direction: 'Middle-Left'
+                    }), _react2.default.createElement(_ballButton.BallButton, {
                         number: this.state.inputNumber,
                         onClick: function () {
                             return _this2.newInputDirection(0);
                         },
-                        direction: 'Left'
+                        direction: 'Up-Left'
                     })][this.state.inputDirection]
                 ),
                 _react2.default.createElement(
@@ -416,11 +411,37 @@ class Application extends _react2.default.Component {
                 _react2.default.createElement(
                     'div',
                     { className: 'edit-options-member' },
+                    _react2.default.createElement(_minusButton.MinusButton, {
+                        onClick: function () {
+                            const newSpeed = _this2.state.speed + 1;
+                            if (newSpeed <= 6) {
+                                _this2.setState({
+                                    speed: newSpeed
+                                });
+                            }
+                        }
+                    })
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'edit-options-member' },
+                    _react2.default.createElement(
+                        'h1',
+                        { className: 'edit-options-member-h1' },
+                        (720 / this.state.speed).toFixed(0)
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'edit-options-member' },
                     _react2.default.createElement(_plusButton.PlusButton, {
                         onClick: function () {
-                            _this2.setState({
-                                speed: _this2.state.speed + 1
-                            });
+                            const newSpeed = _this2.state.speed - 1;
+                            if (newSpeed >= 1) {
+                                _this2.setState({
+                                    speed: newSpeed
+                                });
+                            }
                         }
                     })
                 ),
@@ -447,29 +468,11 @@ class Application extends _react2.default.Component {
                         )
                     )
                 ),
-                _react2.default.createElement(
-                    'div',
-                    {
-                        className: 'edit-options-member',
-                        'data-step': '4',
-                        'data-intro': 'Press this to see other examples.'
-                    },
-                    _react2.default.createElement(_reactPlayerControls.NextButton, {
-                        onClick: function () {
-                            let NextPreset = _this2.state.currentPreset + 1;
-
-                            if (NextPreset >= _this2.state.presets.length) {
-                                NextPreset = 0;
-                            }
-
-                            _this2.setState({
-                                grid: _this2.state.presets[NextPreset],
-                                currentPreset: NextPreset
-                            });
-                        },
-                        isEnabled: true
-                    })
-                )
+                _react2.default.createElement('div', {
+                    className: 'edit-options-member',
+                    'data-step': '4',
+                    'data-intro': 'Press this to see other examples.'
+                })
             ),
             _react2.default.createElement(
                 'div',
@@ -477,28 +480,21 @@ class Application extends _react2.default.Component {
                 _react2.default.createElement(
                     'div',
                     {
-                        className: 'edit-options-member',
-                        'data-step': '9',
-                        'data-intro': 'Trash the whole thing.'
+                        className: 'edit-options-member'
                     },
                     _react2.default.createElement(_trashButton.TrashButton, { onClick: this.emptyGrid })
                 ),
-                _react2.default.createElement('div', { className: 'spacer-div-next-to-trash' }),
                 _react2.default.createElement(
                     'div',
                     {
-                        className: 'edit-options-member',
-                        'data-step': '16',
-                        'data-intro': 'Share your creation on Facebook!'
+                        className: 'edit-options-member'
                     },
-                    _react2.default.createElement(
-                        'button',
-                        {
-                            className: 'ShareButton isEnabled',
-                            onClick: this.share
-                        },
-                        _react2.default.createElement(_icons.ShareIcon, null)
-                    )
+                    _react2.default.createElement('input', { type: 'checkbox', value: this.state.collisionsOn, onChange: function () {
+                            _this2.setState({
+                                collisionsOn: !_this2.state.collisionsOn
+                            });
+                        }
+                    })
                 )
             ),
             _react2.default.createElement(

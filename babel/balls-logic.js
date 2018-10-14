@@ -180,7 +180,7 @@ const getBallBoundaryDictionary = exports.getBallBoundaryDictionary = function (
     }, {});
 };
 
-const nextGrid = exports.nextGrid = function (grid, length) {
+const nextGrid = exports.nextGrid = function (grid, length, collisionsOn) {
     const {
         size,
         balls
@@ -197,7 +197,7 @@ const nextGrid = exports.nextGrid = function (grid, length) {
     const ballSets = Object.keys(ballSetDictionary).map(function (key) {
         return ballSetDictionary[key];
     });
-    const rotatedBalls = ballSets; //.map(rotateSet);
+    const rotatedBalls = collisionsOn ? ballSets.map(rotateSet) : ballSets;
     const flatRotatedBalls = rotatedBalls.reduce(function (accum, current) {
         return [...accum, ...current];
     }, []);

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.InfoIcon = exports.ShareIcon = exports.TurtleIcon = exports.RabbitIcon = exports.SymmetryIcon = exports.LargeGridIcon = exports.SmallGridIcon = exports.PlusIcon = exports.ArrowIcon = exports.ResizeIcon = exports.EditIcon = exports.TrashIcon = undefined;
+exports.InfoIcon = exports.ShareIcon = exports.TurtleIcon = exports.RabbitIcon = exports.CollisionIcon = exports.SymmetryIcon = exports.LargeGridIcon = exports.SmallGridIcon = exports.MinusIcon = exports.PlusIcon = exports.BallIcon = exports.ArrowIcon = exports.ResizeIcon = exports.EditIcon = exports.TrashIcon = undefined;
 
 var _react = require('react');
 
@@ -30,12 +30,30 @@ const ArrowIcon = exports.ArrowIcon = function ({ direction }) {
         })
     );
 };
+const BallIcon = exports.BallIcon = function ({ direction }) {
+    return _react2.default.createElement(
+        'svg',
+        { 'class': 'Icon PlayIcon ' + direction, viewBox: '0 0 100 100' },
+        _react2.default.createElement('circle', { 'class': 'Icon-shape', cx: '50', cy: '50', r: '45', 'stroke-width': '3', fill: 'white' }),
+        _react2.default.createElement('polygon', {
+            points: '82,50 60,62 60,53 23,53 23,47 60,47 60,38 82,50',
+            fill: 'black'
+        })
+    );
+};
 
 const PlusIcon = exports.PlusIcon = function () {
     return _react2.default.createElement(
         'svg',
         { 'class': 'Icon PlayIcon', viewBox: '0 0 100 100' },
         _react2.default.createElement('polygon', { 'class': 'Icon-shape', points: '45 10, 55 10, 55 45, 90 45, 90 55, 55 55, 55 90 45 90, 45 55, 10 55, 10 45, 45 45' })
+    );
+};
+const MinusIcon = exports.MinusIcon = function () {
+    return _react2.default.createElement(
+        'svg',
+        { 'class': 'Icon PlayIcon', viewBox: '0 0 100 100' },
+        _react2.default.createElement('polygon', { 'class': 'Icon-shape', points: '90 45, 90 55, 10 55, 10 45' })
     );
 };
 const SmallGridIcon = exports.SmallGridIcon = function () {
@@ -65,6 +83,49 @@ const LargeGridIcon = exports.LargeGridIcon = function () {
 
 const SymmetryIcon = exports.SymmetryIcon = function ({ className }) {
     return _react2.default.createElement('img', { className: 'Icon Img-Shape ' + className, src: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAARASURBVHhe7Zs7a1RRFEYTxSI+EbTylQdYpBFRK/0Bio9KOxERGwtb8ReYxj8gNjZWBi0iCAqCtoopTGFhEBsLH6CCjUV0ndx9NIN3bu7JzNzz3XEv2Fznnr2/cyaLzOAkGVFkaWnp5K8KWL9rraWwfsVaS2F9xlqdOrgQMVyIGC5EDBcihgsRw4WI4ULEcCFiuBAxXIgYLkQMFyKGCxHDhYjhQsRwIWK4EDFciBguRAwXIoYLEcOFiOFCxHAhYrgQMVyIGC5EDBcihgsRw4X0AZ7kPuo4dcBurRky5IWQMUGdoQ4TOWq388OBxjjQHa5Ly8+24CU1aS3JECUrhPGNzM8WSQU8XqCmrSUfnCUc7nFxrE64v0iNWWsSzMkKYfaexXTA/Y9Uz68Oa4YzdJWxgovWngS5kkIYnWR25StBByzlkcLedWSEA960kSSYkxTC3GmL6Ao9zUphz1oyAvRds7EkmFMVcsQiKqGvGSnsFWQ8Kbathr4fXMZtNAlmVV+yRpl9XaRUQ99gpbBHiozAeRtNhlnlN/Vp6rNFVULfYKSQnSrjso2uCeZlhQSYP0jlkUJmozICZEgLCZDRvBSyGpcRIEdeSICc5qSQkUVGgKxWCAmQNXgpzGaTESCvNUIC5AUpXyy+Evo+UfWlMJNVRoDMVgkJkNl/KfTWlhGg9yGXc/0ucme4doX1XoU84FK6dy9F7g2utaC3Wgo9STJywjl7EqJCVync3EQ9tT55OOtQCAlw1k4pPNhCPbf1VsB5h0ZIgPP+lcI/Sj/fV2bYhAQ48wcum8Php6j3xe12MGxCOO9P6qwdf/kNfZwb74plfYZJyD8yIqztZWGxaNNmWIR0lRFhcQ9VWwq9L6hbA6hHtkUprPckhPV526ffdd+2WBV6q2VEaKothb7vXI7ZaN8gt43/U99JLdgWldBXT0aE5qxSyGzbZ1mDkxFhKEkKddRGe4asNn3aO3gZEYazSCGnFULIaU5GhJDGpZAhL4SMIKPuLzz0R0aEsEalMC8thPl8MiKEBilvbZ9K6OtJCrOyQhjfwXxeGRHCa0uBr/RO2WgSzMkKYXbOYiqhb7AyImyS8p1y28aSYE5SCHP7LaIS+pqREWGzWlLoeWUjSTCnKuSERXSFnmZlRNh0VSmsP7P2JJhTFTJtEaWwnkdGhM0rpbB21VqTYE75PaT0h3nczysjwiGClDd2rj9wL/wCxHprS4JZZSG7qXmLWobH36hT1pIfDrOVc13nOkfNUhd4vM6Wk2FeVkiAiA1khL8VCc/5EtfttjSc8CSlhfx3uBAxXIgYLkQMFyKGCxHDhYjhQsRwIWK4EDFciBguRAwXIoYLEcOFiOFCxHAhYrgQMVyIGC5EDBcihgsRw4WI4ULEcCFiuBAxXIgYLkQMFyKGCxHDhYjB12wbdahb8QWdsNZSWN9ZNheL9V3WKsbIyG9dmEodzEPl9gAAAABJRU5ErkJggg==' });
+};
+
+const CollisionIcon = exports.CollisionIcon = function ({ className }) {
+    return _react2.default.createElement(
+        'svg',
+        { className: 'Icon Img-Shape ' + className, viewBox: '0 0 100 100', xmlns: 'http://www.w3.org/2000/svg' },
+        _react2.default.createElement(
+            'g',
+            null,
+            _react2.default.createElement(
+                'title',
+                null,
+                'Layer 1'
+            ),
+            _react2.default.createElement(
+                'metadata',
+                { transform: 'matrix(0.017777779632144552,0,0,0.017777779632144552,0,0) ' },
+                'Svg Vector Icons : http://www.onlinewebfonts.com/icon'
+            ),
+            _react2.default.createElement(
+                'g',
+                { stroke: 'null', id: 'svg_10' },
+                _react2.default.createElement(
+                    'g',
+                    { stroke: 'null', transform: 'matrix(-18.21328427294832,0,0,-22.385135839644843,7492.978112541315,6585.479511056997) ', id: 'svg_6' },
+                    _react2.default.createElement(
+                        'g',
+                        { stroke: 'null', transform: 'matrix(0.017777779632144552,0,0,0.017777779632144552,0,0) ', id: 'svg_4' },
+                        _react2.default.createElement('path', { style: { fill: "white" }, stroke: 'null', id: 'svg_5', d: 'm23060.35926,15996.93929c-54,37.8 -117.1,56.8 -181.7,55.9c-8.5,-0.1 -17,-0.6 -25.4,-1.3c-3.4,-0.3 -6.9,-0.9 -10.3,-1.3c-6.6,-0.9 -13.2,-1.8 -19.6,-3c-4,-0.8 -7.8,-1.8 -11.7,-2.7c-6.3,-1.5 -12.6,-3 -18.7,-4.8c-3,-0.9 -5.9,-1.9 -8.8,-2.9c-7.1,-2.4 -14.2,-4.8 -21,-7.7c-1.6,-0.6 -3.1,-1.4 -4.6,-2c-8,-3.5 -16,-7.3 -23.6,-11.4c-0.4,-0.2 -0.7,-0.3 -1.1,-0.6c-26,-14.3 -49.7,-32.1 -70.6,-52.9c-0.3,-0.3 -0.7,-0.7 -1,-1.1c-6.5,-6.5 -12.6,-13.3 -18.5,-20.4c-1.2,-1.5 -2.4,-3.1 -3.7,-4.7c-42.4,-53.1 -68,-120.2 -68,-193.3l81.7,0l-130.7,-196l-130.7,196.1l81.7,0c0,85.9 26.8,165.6 72.3,231.4c0.6,0.9 0.9,1.9 1.6,2.8c4.7,6.7 10,13 15,19.3c1.9,2.4 3.7,4.9 5.6,7.2c7.5,9.1 15.4,17.5 23.5,25.9c0.8,0.8 1.5,1.6 2.3,2.4c27.3,27.3 58.2,50.3 91.8,68.8c0.9,0.5 1.8,1.1 2.7,1.6c9.7,5.2 19.6,9.9 29.7,14.3c2.5,1.1 5,2.3 7.5,3.4c8.6,3.6 17.5,6.7 26.4,9.7c4.2,1.4 8.4,2.9 12.7,4.2c7.8,2.3 15.8,4.3 23.8,6.1c5.3,1.2 10.6,2.6 16,3.6c2.3,0.5 4.4,1.2 6.6,1.5c7.6,1.4 15.2,2.1 22.8,3c2.7,0.3 5.4,0.8 8.2,1.1c13.6,1.3 27.2,2.2 40.8,2.2c83,0 164,-25.4 233.5,-74c22.1,-15.6 27.5,-46.1 12,-68.3c-15.8,-22.3 -46.3,-27.6 -68.5,-12.1' })
+                    )
+                ),
+                _react2.default.createElement(
+                    'g',
+                    { stroke: 'null', id: 'svg_9' },
+                    _react2.default.createElement(
+                        'g',
+                        { stroke: 'null', transform: 'matrix(0.3237917541820794,0,0,0.39795801199282715,-2759.3756513175786,-2696.1603290748985) ', id: 'svg_8' },
+                        _react2.default.createElement('path', { style: { fill: "white" }, stroke: 'null', id: 'svg_7', d: 'm9674.47806,7224.79093c-54,37.8 -117.1,56.8 -181.7,55.9c-8.5,-0.1 -17,-0.6 -25.4,-1.3c-3.4,-0.3 -6.9,-0.9 -10.3,-1.3c-6.6,-0.9 -13.2,-1.8 -19.6,-3c-4,-0.8 -7.8,-1.8 -11.7,-2.7c-6.3,-1.5 -12.6,-3 -18.7,-4.8c-3,-0.9 -5.9,-1.9 -8.8,-2.9c-7.1,-2.4 -14.2,-4.8 -21,-7.7c-1.6,-0.6 -3.1,-1.4 -4.6,-2c-8,-3.5 -16,-7.3 -23.6,-11.4c-0.4,-0.2 -0.7,-0.3 -1.1,-0.6c-26,-14.3 -49.7,-32.1 -70.6,-52.9c-0.3,-0.3 -0.7,-0.7 -1,-1.1c-6.5,-6.5 -12.6,-13.3 -18.5,-20.4c-1.2,-1.5 -2.4,-3.1 -3.7,-4.7c-42.4,-53.1 -68,-120.2 -68,-193.3l81.7,0l-130.7,-196l-130.7,196.1l81.7,0c0,85.9 26.8,165.6 72.3,231.4c0.6,0.9 0.9,1.9 1.6,2.8c4.7,6.7 10,13 15,19.3c1.9,2.4 3.7,4.9 5.6,7.2c7.5,9.1 15.4,17.5 23.5,25.9c0.8,0.8 1.5,1.6 2.3,2.4c27.3,27.3 58.2,50.3 91.8,68.8c0.9,0.5 1.8,1.1 2.7,1.6c9.7,5.2 19.6,9.9 29.7,14.3c2.5,1.1 5,2.3 7.5,3.4c8.6,3.6 17.5,6.7 26.4,9.7c4.2,1.4 8.4,2.9 12.7,4.2c7.8,2.3 15.8,4.3 23.8,6.1c5.3,1.2 10.6,2.6 16,3.6c2.3,0.5 4.4,1.2 6.6,1.5c7.6,1.4 15.2,2.1 22.8,3c2.7,0.3 5.4,0.8 8.2,1.1c13.6,1.3 27.2,2.2 40.8,2.2c83,0 164,-25.4 233.5,-74c22.1,-15.6 27.5,-46.1 12,-68.3c-15.8,-22.3 -46.3,-27.6 -68.5,-12.1' })
+                    )
+                )
+            )
+        )
+    );
 };
 
 const RabbitIcon = exports.RabbitIcon = function () {

@@ -138,7 +138,7 @@ export const getBallBoundaryDictionary = (balls, size, keyFunc, rotations) => ba
     , {},
 );
 
-export const nextGrid = (grid, length) => {
+export const nextGrid = (grid, length, collisionsOn) => {
     const {
         size,
         balls
@@ -154,7 +154,7 @@ export const nextGrid = (grid, length) => {
     ).filter(ball => ball.x + ball.y < size && ball.x < size && ball.y < size);
     const ballSetDictionary = getBallBoundaryDictionary(reducedBalls, size, locationKey);
     const ballSets = Object.keys(ballSetDictionary).map(key => ballSetDictionary[key]);
-    const rotatedBalls = ballSets//.map(rotateSet);
+    const rotatedBalls = collisionsOn ? ballSets.map(rotateSet) : ballSets;
     const flatRotatedBalls = rotatedBalls.reduce(
         (accum, current) => [...accum, ...current],
         []
