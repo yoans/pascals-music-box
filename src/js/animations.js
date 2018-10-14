@@ -182,34 +182,34 @@ export const setUpCanvas = (state) => {
             sketch.strokeWeight(0);
             sketch.fill(0, 0, 0);
             sketch.triangle(gridCanvasBorderSize, gridCanvasBorderSize, gridCanvasWidth+gridCanvasBorderSize, gridCanvasBorderSize,(gridCanvasBorderSize*2+gridCanvasWidth)/2.0, gridCanvasBorderSize+gridCanvasHeight);
-            //draw grid lines
-            sketch.push();
-            sketch.stroke(45, 45, 45);
-            sketch.strokeWeight(1);
-            for (var i=.5; i<gridSize; i++) {
-                // horizontal
-                sketch.line(
-                    gridCanvasBorderSize + i * cellSize/2.0,
-                    gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0,
-                    gridCanvasWidth - i * cellSize/2.0,
-                    gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0
-                );
-                // forward-vertical
-                sketch.line(
-                    gridCanvasBorderSize + i * cellSize/2.0,
-                    gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0,
-                    i * cellSize,
-                    gridCanvasBorderSize
-                );
-                // backward-vertical
-                sketch.line(
-                    i * cellSize,
-                    gridCanvasBorderSize,
-                    gridCanvasBorderSize + gridCanvasWidth/2.0 + i * cellSize/2.0,
-                    gridCanvasBorderSize + gridCanvasHeight - i * cellSize * sqrtThree / 2.0
-                );
-            }
-            sketch.pop();
+            // //draw grid lines
+            // sketch.push();
+            // sketch.stroke(45, 45, 45);
+            // sketch.strokeWeight(1);
+            // for (var i=.5; i<gridSize; i++) {
+            //     // horizontal
+            //     sketch.line(
+            //         gridCanvasBorderSize + i * cellSize/2.0,
+            //         gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0,
+            //         gridCanvasWidth - i * cellSize/2.0,
+            //         gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0
+            //     );
+            //     // forward-vertical
+            //     sketch.line(
+            //         gridCanvasBorderSize + i * cellSize/2.0,
+            //         gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0,
+            //         i * cellSize,
+            //         gridCanvasBorderSize
+            //     );
+            //     // backward-vertical
+            //     sketch.line(
+            //         i * cellSize,
+            //         gridCanvasBorderSize,
+            //         gridCanvasBorderSize + gridCanvasWidth/2.0 + i * cellSize/2.0,
+            //         gridCanvasBorderSize + gridCanvasHeight - i * cellSize * sqrtThree / 2.0
+            //     );
+            // }
+            // sketch.pop();
             
             const convertBallToMiddle = xy => (
                 {
@@ -220,7 +220,7 @@ export const setUpCanvas = (state) => {
             //draw Spot Markers
             sketch.push();
             sketch.stroke(45);
-            sketch.fill(45);
+            sketch.noFill();
             sketch.strokeWeight(2);
             for (var x=0; x<gridSize; x++) {
                 for (var y=0; x+y<gridSize; y++) {
@@ -241,7 +241,7 @@ export const setUpCanvas = (state) => {
             
             sketch.push();
             sketch.strokeWeight(gridCanvasBorderSize*2);
-            sketch.stroke(255);
+            sketch.stroke(45);
             sketch.noFill();
             sketch.triangle(0, 0, gridCanvasWidth+2*gridCanvasBorderSize,0,(gridCanvasBorderSize*2+gridCanvasWidth)/2.0,2*gridCanvasBorderSize+gridCanvasHeight);
             sketch.pop();
