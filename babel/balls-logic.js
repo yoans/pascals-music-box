@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.nextGrid = exports.getBallBoundaryDictionary = exports.flipBall = exports.boundaryKey = exports.ballBoundaryKey = exports.locationKey = exports.ballKey = exports.emptyGrid = exports.newGrid = exports.addToGrid = exports.removeFromGrid = exports.BOUNDARY = exports.NO_BOUNDARY = undefined;
+exports.nextGrid = exports.getBallBoundaryDictionary = exports.flipBall = exports.flipVector = exports.boundaryKey = exports.ballBoundaryKey = exports.locationKey = exports.ballKey = exports.emptyGrid = exports.newGrid = exports.addToGrid = exports.removeFromGrid = exports.BOUNDARY = exports.NO_BOUNDARY = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -158,7 +158,7 @@ const rotateBall = function (number) {
 const rotateSet = function (set) {
     return set.map(rotateBall(set.length));
 };
-const flipVector = function (vector) {
+const flipVector = exports.flipVector = function (vector) {
     return [2, 5, 4, 1, 0, 3][vector];
 };
 const flipBall = function (_ref) {

@@ -119,7 +119,7 @@ const rotateBall = number => ball => ({
     vector: cycleVector(ball.vector, number),
 });
 const rotateSet = set => set.map(rotateBall(set.length));
-const flipVector = vector => [2,5,4,1,0,3][vector];
+export const flipVector = vector => [2,5,4,1,0,3][vector];
 export const flipBall = ({ vector, ...rest }) => ({ vector: flipVector(vector), ...rest });
 export const getBallBoundaryDictionary = (balls, size, keyFunc, rotations) => balls.reduce(
     (ballDictionary, ball) => {

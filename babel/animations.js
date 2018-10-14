@@ -94,8 +94,6 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
             const gridSize = stateDrawing.grid.size;
             mouseX = sketch.mouseX;
             mouseY = sketch.mouseY;
-            // draw background slash border
-            // sketch.background(255, 255, 255);
 
             mouseIsPressed = sketch.mouseIsPressed;
 
@@ -151,17 +149,25 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
             sketch.strokeWeight(1);
             for (var i = .5; i < gridSize; i++) {
                 // horizontal
-                sketch.line(1 + gridCanvasBorderSize + i * cellSize / 2.0, 1 + gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0, gridCanvasWidth - i * cellSize / 2.0, 1 + gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0);
+                sketch.line(gridCanvasBorderSize + i * cellSize / 2.0, gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0, gridCanvasWidth - i * cellSize / 2.0, gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0);
                 // forward-vertical
-                sketch.line(1 + gridCanvasBorderSize + i * cellSize / 2.0, 1 + gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0, 1 + i * cellSize, 1 + gridCanvasBorderSize);
+                sketch.line(gridCanvasBorderSize + i * cellSize / 2.0, gridCanvasBorderSize + i * cellSize * sqrtThree / 2.0, i * cellSize, gridCanvasBorderSize);
                 // backward-vertical
-                sketch.line(1 + i * cellSize, 1 + gridCanvasBorderSize, 1 + gridCanvasBorderSize + gridCanvasWidth / 2.0 + i * cellSize / 2.0, gridCanvasHeight - i * cellSize * sqrtThree / 2.0);
+                sketch.line(i * cellSize, gridCanvasBorderSize, gridCanvasBorderSize + gridCanvasWidth / 2.0 + i * cellSize / 2.0, gridCanvasBorderSize + gridCanvasHeight - i * cellSize * sqrtThree / 2.0);
             }
+            sketch.pop();
+
+            // draw border
+
+            sketch.push();
+            sketch.strokeWeight(gridCanvasBorderSize * 2);
+            sketch.stroke(255);
+            sketch.noFill();
+            sketch.triangle(0, 0, gridCanvasWidth + 2 * gridCanvasBorderSize, 0, (gridCanvasBorderSize * 2 + gridCanvasWidth) / 2.0, 2 * gridCanvasBorderSize + gridCanvasHeight);
             sketch.pop();
 
             sketch.fill(255, 255, 255);
             sketch.strokeWeight(0);
-            // const convertIndexToPixel = index => (index * cellSize) + gridCanvasBorderSize;
             const convertBallToMiddle = function (xy) {
                 return {
                     x: gridCanvasBorderSize + xy.x * cellSize + xy.y * cellSize / 2.0,
@@ -263,22 +269,19 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
                     return undefined;
                 });
 
-                //     const ballsBouncing = bouncingDictionary[BOUNDARY] || [];
+                const ballsBouncing = bouncingDictionary[_ballsLogic.BOUNDARY] || [];
 
-                //     // bounced
-                //     ballsBouncing.map((ball) => {
-                //         const topLeft = convertBallToMiddle(ball);
+                // bounced
+                ballsBouncing.map(function (ball) {
+                    sketch.push();
+                    sketch.strokeWeight(0);
+                    sketch.fill(255, 255, 255);
 
-                //         sketch.push();
-                //         sketch.strokeWeight(0);
-                //         sketch.fill(255, 255, 255);
-                //         translateAndRotate(topLeft, sketch, ball.vector, cellSize);
-                //         triangleRotatingArray[bouncedRotation](cellSize, sketch, percentage);
-
-                //         sketch.pop();
-                //         return undefined;
-                //     });
-                //     return undefined;
+                    triangleDrawingArray(timeShift(convertBallToMiddle(ball), (0, _ballsLogic.flipVector)((ball.vector + rotations) % 6), percentage, cellSize, ball.speed), cellSize, sketch);
+                    sketch.pop();
+                    return undefined;
+                });
+                return undefined;
             });
 
             // draw hover input
