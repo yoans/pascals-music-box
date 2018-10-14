@@ -32,6 +32,16 @@ const convertExWhyPixelToIndex = (x,y) => {
         y: whyIndex
     };
 };
+const polygon = (sketch, x, y, radius, npoints) => {
+    var angle = sketch.TWO_PI / npoints;
+    sketch.beginShape();
+    for (var a = 0; a < sketch.TWO_PI; a += angle) {
+      var sx = x + sketch.cos(a) * radius;
+      var sy = y + sketch.sin(a) * radius;
+      sketch.vertex(sx, sy);
+    }
+    sketch.endShape(sketch.CLOSE);
+  }
 // const nat = () => chance.natural({
 //     min: 0,
 //     max: 255,
@@ -55,14 +65,22 @@ export const getAdderWithMousePosition = (ballAdder) => (e) => {
 export const setUpCanvas = (state) => {
     stateDrawing = state;
     previousTime = new Date();
-    const triangleDrawingArray = (topLeft, cellSize, sketch) => sketch.ellipse(
-        topLeft.x + (cellSize / 2.0),
-        topLeft.y + (sqrtThree*cellSize/6),
-        // cellSize*0.57735026918962,
-        // cellSize*0.57735026918962
-        cellSize*sqrtThree/3,
-        cellSize*sqrtThree/3
-    );
+    const triangleDrawingArray = (topLeft, cellSize, sketch) => {
+        // sketch.ellipse(
+        //     topLeft.x + (cellSize / 2.0),
+        //     topLeft.y + (sqrtThree*cellSize/6),
+        //     cellSize*sqrtThree/3,
+        //     cellSize*sqrtThree/3
+        // )
+                    
+        polygon(
+            sketch,
+            topLeft.x + (cellSize / 2.0),
+            topLeft.y + (sqrtThree*cellSize/6),
+            cellSize/3,
+            6
+        )
+    };
     const triangleRotatingArray = [
 
         (cellSize, sketch, percentage) => sketch.triangle(
@@ -192,6 +210,32 @@ export const setUpCanvas = (state) => {
                 );
             }
             sketch.pop();
+            
+            const convertBallToMiddle = xy => (
+                {
+                    x: gridCanvasBorderSize + xy.x * cellSize + xy.y * cellSize / 2.0,
+                    y: gridCanvasBorderSize + xy.y * cellSize * sqrtThree / 2.0
+                }
+            );
+            //draw Spot Markers
+            sketch.push();
+            sketch.stroke(45);
+            sketch.fill(45);
+            sketch.strokeWeight(2);
+            for (var x=0; x<gridSize; x++) {
+                for (var y=0; x+y<gridSize; y++) {
+                    const xAndY = convertBallToMiddle({x,y});
+                    
+                    polygon(
+                        sketch,
+                        xAndY.x + (cellSize / 2.0),
+                        xAndY.y + (sqrtThree*cellSize/6),
+                        cellSize/3,
+                        6
+                    )
+                }
+            }
+            sketch.pop();
 
             // draw border
             
@@ -204,12 +248,6 @@ export const setUpCanvas = (state) => {
 
             sketch.fill(255, 255, 255);
             sketch.strokeWeight(0);
-            const convertBallToMiddle = xy => (
-                {
-                    x: gridCanvasBorderSize + xy.x * cellSize + xy.y * cellSize / 2.0,
-                    y: gridCanvasBorderSize + xy.y * cellSize * sqrtThree / 2.0
-                }
-            );
             const timeDiff = new Date().getTime() - previousTime.getTime();
             const possiblePercentage = ((
                 stateDrawing.playing ? timeDiff : 0

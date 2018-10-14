@@ -37,6 +37,16 @@ const convertExWhyPixelToIndex = function (x, y) {
         y: whyIndex
     };
 };
+const polygon = function (sketch, x, y, radius, npoints) {
+    var angle = sketch.TWO_PI / npoints;
+    sketch.beginShape();
+    for (var a = 0; a < sketch.TWO_PI; a += angle) {
+        var sx = x + sketch.cos(a) * radius;
+        var sy = y + sketch.sin(a) * radius;
+        sketch.vertex(sx, sy);
+    }
+    sketch.endShape(sketch.CLOSE);
+};
 // const nat = () => chance.natural({
 //     min: 0,
 //     max: 255,
@@ -58,10 +68,14 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
     stateDrawing = state;
     previousTime = new Date();
     const triangleDrawingArray = function (topLeft, cellSize, sketch) {
-        return sketch.ellipse(topLeft.x + cellSize / 2.0, topLeft.y + sqrtThree * cellSize / 6,
-        // cellSize*0.57735026918962,
-        // cellSize*0.57735026918962
-        cellSize * sqrtThree / 3, cellSize * sqrtThree / 3);
+        // sketch.ellipse(
+        //     topLeft.x + (cellSize / 2.0),
+        //     topLeft.y + (sqrtThree*cellSize/6),
+        //     cellSize*sqrtThree/3,
+        //     cellSize*sqrtThree/3
+        // )
+
+        polygon(sketch, topLeft.x + cellSize / 2.0, topLeft.y + sqrtThree * cellSize / 6, cellSize / 3, 6);
     };
     const triangleRotatingArray = [function (cellSize, sketch, percentage) {
         return sketch.triangle(cellSize / 2.0, -(cellSize * percentage), cellSize, cellSize - cellSize * percentage, 0, cellSize - cellSize * percentage);
@@ -157,6 +171,26 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
             }
             sketch.pop();
 
+            const convertBallToMiddle = function (xy) {
+                return {
+                    x: gridCanvasBorderSize + xy.x * cellSize + xy.y * cellSize / 2.0,
+                    y: gridCanvasBorderSize + xy.y * cellSize * sqrtThree / 2.0
+                };
+            };
+            //draw Spot Markers
+            sketch.push();
+            sketch.stroke(45);
+            sketch.fill(45);
+            sketch.strokeWeight(2);
+            for (var x = 0; x < gridSize; x++) {
+                for (var y = 0; x + y < gridSize; y++) {
+                    const xAndY = convertBallToMiddle({ x, y });
+
+                    polygon(sketch, xAndY.x + cellSize / 2.0, xAndY.y + sqrtThree * cellSize / 6, cellSize / 3, 6);
+                }
+            }
+            sketch.pop();
+
             // draw border
 
             sketch.push();
@@ -168,12 +202,6 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
 
             sketch.fill(255, 255, 255);
             sketch.strokeWeight(0);
-            const convertBallToMiddle = function (xy) {
-                return {
-                    x: gridCanvasBorderSize + xy.x * cellSize + xy.y * cellSize / 2.0,
-                    y: gridCanvasBorderSize + xy.y * cellSize * sqrtThree / 2.0
-                };
-            };
             const timeDiff = new Date().getTime() - previousTime.getTime();
             const possiblePercentage = (stateDrawing.playing ? timeDiff : 0) / (1.0 * stateDrawing.noteLength);
             const percentage = possiblePercentage > 1 ? 1 : possiblePercentage;
