@@ -46,13 +46,14 @@ const polygon = (sketch, x, y, radius, npoints) => {
 //     min: 0,
 //     max: 255,
 // });
-const mouseIsInSketch = () => (
-    mouseX-mouseY/sqrtThree > 0 + gridCanvasBorderSize
+const pointIsInSketch = (thisX,thisY) => (
+    thisX-thisY/sqrtThree > 0 + gridCanvasBorderSize
     &&
-    mouseX < gridCanvasWidth - gridCanvasBorderSize - mouseY/sqrtThree
+    thisX < gridCanvasWidth - gridCanvasBorderSize - thisY/sqrtThree
     &&
-    mouseY > 0 + gridCanvasBorderSize
+    thisX > 0 + gridCanvasBorderSize
 );
+const mouseIsInSketch = () => pointIsInSketch(mouseX,mouseY)
 
 export const getAdderWithMousePosition = (ballAdder) => (e) => {
     thisBallAdder = ballAdder;
@@ -72,14 +73,16 @@ export const setUpCanvas = (state) => {
         //     cellSize*sqrtThree/3,
         //     cellSize*sqrtThree/3
         // )
-                    
-        polygon(
-            sketch,
-            topLeft.x + (cellSize / 2.0),
-            topLeft.y + (sqrtThree*cellSize/6),
-            cellSize/3,
-            6
-        )
+          
+        if (pointIsInSketch(topLeft.x,topLeft.y)) {          
+            polygon(
+                sketch,
+                topLeft.x + (cellSize / 2.0),
+                topLeft.y + (sqrtThree*cellSize/6),
+                cellSize/3,
+                6
+            )
+        }
     };
     const triangleRotatingArray = [
 

@@ -18,12 +18,10 @@ var _midi = require('./midi');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const getIndex = function (x, y, size, vector) {
-    if (vector === 1 || vector === 3) {
-        return y;
-    } else if (vector === 0 || vector === 2) {
+    if (vector === 0 || vector === 5) {
         return x;
     }
-    return 0;
+    return y;
 };
 // const frequencies = notesFrequencies('C3 D3 E3 F3 G3 A3 B3 C4 D4 E4 F4 G4 A4 B4 C5 D5 E5 F5 G5 A5');//c Scale
 const frequencies = (0, _notesFrequencies2.default)('e3 a3 b3 c4 e4 f4 a4 b4 e5 a5 b5 c6 e6 f6 a6 b6 e7'); //ake bono scale

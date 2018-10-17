@@ -51,8 +51,11 @@ const polygon = function (sketch, x, y, radius, npoints) {
 //     min: 0,
 //     max: 255,
 // });
+const pointIsInSketch = function (thisX, thisY) {
+    return thisX - thisY / sqrtThree > 0 + gridCanvasBorderSize && thisX < gridCanvasWidth - gridCanvasBorderSize - thisY / sqrtThree && thisX > 0 + gridCanvasBorderSize;
+};
 const mouseIsInSketch = function () {
-    return mouseX - mouseY / sqrtThree > 0 + gridCanvasBorderSize && mouseX < gridCanvasWidth - gridCanvasBorderSize - mouseY / sqrtThree && mouseY > 0 + gridCanvasBorderSize;
+    return pointIsInSketch(mouseX, mouseY);
 };
 
 const getAdderWithMousePosition = exports.getAdderWithMousePosition = function (ballAdder) {
@@ -75,7 +78,9 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
         //     cellSize*sqrtThree/3
         // )
 
-        polygon(sketch, topLeft.x + cellSize / 2.0, topLeft.y + sqrtThree * cellSize / 6, cellSize / 3, 6);
+        if (pointIsInSketch(topLeft.x, topLeft.y)) {
+            polygon(sketch, topLeft.x + cellSize / 2.0, topLeft.y + sqrtThree * cellSize / 6, cellSize / 3, 6);
+        }
     };
     const triangleRotatingArray = [function (cellSize, sketch, percentage) {
         return sketch.triangle(cellSize / 2.0, -(cellSize * percentage), cellSize, cellSize - cellSize * percentage, 0, cellSize - cellSize * percentage);
