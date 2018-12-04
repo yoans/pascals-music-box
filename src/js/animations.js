@@ -74,7 +74,7 @@ export const setUpCanvas = (state) => {
         //     cellSize*sqrtThree/3
         // )
           
-        if (pointIsInSketch(topLeft.x,topLeft.y)) {          
+        if (pointIsInSketch(topLeft.x+5,topLeft.y+5)) {          
             polygon(
                 sketch,
                 topLeft.x + (cellSize / 2.0),

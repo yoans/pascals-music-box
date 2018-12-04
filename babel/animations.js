@@ -78,7 +78,7 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
         //     cellSize*sqrtThree/3
         // )
 
-        if (pointIsInSketch(topLeft.x, topLeft.y)) {
+        if (pointIsInSketch(topLeft.x + 5, topLeft.y + 5)) {
             polygon(sketch, topLeft.x + cellSize / 2.0, topLeft.y + sqrtThree * cellSize / 6, cellSize / 3, 6);
         }
     };
