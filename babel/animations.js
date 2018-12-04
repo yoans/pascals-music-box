@@ -52,7 +52,7 @@ const polygon = function (sketch, x, y, radius, npoints) {
 //     max: 255,
 // });
 const pointIsInSketch = function (thisX, thisY) {
-    return thisX - thisY / sqrtThree > 0 + gridCanvasBorderSize && thisX < gridCanvasWidth - gridCanvasBorderSize - thisY / sqrtThree && thisX > 0 + gridCanvasBorderSize;
+    return thisX - thisY / sqrtThree >= 0 + gridCanvasBorderSize && thisX <= gridCanvasWidth - gridCanvasBorderSize - thisY / sqrtThree && thisX >= 0 + gridCanvasBorderSize;
 };
 const mouseIsInSketch = function () {
     return pointIsInSketch(mouseX, mouseY);
@@ -78,7 +78,7 @@ const setUpCanvas = exports.setUpCanvas = function (state) {
         //     cellSize*sqrtThree/3
         // )
 
-        if (pointIsInSketch(topLeft.x + 5, topLeft.y + 5)) {
+        if (pointIsInSketch(topLeft.x + 2, topLeft.y + 2)) {
             polygon(sketch, topLeft.x + cellSize / 2.0, topLeft.y + sqrtThree * cellSize / 6, cellSize / 3, 6);
         }
     };
